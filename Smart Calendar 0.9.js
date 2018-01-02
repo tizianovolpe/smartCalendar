@@ -34,13 +34,42 @@ if(calendarFile==true){
 }
 
 
+/*
+*******************************************
+* la funzione principale: genera il calendario e restituise un oggetto js
 
+***********************************
+* struttura dell'oggetto calendario
+***********************************
+
+calendario = {
+		'gen': {
+			'nome':'gennaio',
+			'giorni:{
+				1: {
+					'numero' : 1,
+					'giorno' : 'lunedì',
+					'santo' : 'il nome del santo',
+					'festivo' : true / false
+					'luna' : numero
+					'counter' : il numero del giorno nell anno
+					'settimana' : se lunedì numero oppure false
+				}
+			}
+		},
+        'gli altri mesi'{
+            ....
+    }
+}
+
+*******************************************
+*/
 
 function calGen(anno,prefs){
 	
 	
 	//la variabile che conterrà tutto il calendario
-	var calendario = {}
+	var calendario = {};
 	
 	//cancello da calSettings il 29 febbrario nel caso in cui l'anno non sia bisestile
 	var bisestile = bisestileCalc(anno);
@@ -75,36 +104,22 @@ function calGen(anno,prefs){
 	
 	/*
 	***************
-	* generazione del calendario, mancano ancora le festivita e i giorni mobili
-	
-	
-	calendario = {
-		'gen': {
-			'nome':'gennaio',
-			'giorni:{
-				1: {
-					'numero' : 1,
-					'giorno' : 'lunedì',
-					'santo' : 'il nome del santo',
-					'festivo' : true / false
-					'luna' : numero
-					'counter' : il numero del giorno nell anno
-					'settimana : se lunedì numero oppure false
-				}
-			}
-		}
-	}
-	
-	
+	* generazione del calendario, mancano ancora i giorni mobili		
 	***************
 	*/
 	
 	var nMese = 0;
+    var counterGiorni = 0;
+	var settimana = 1;
+    
+    //variabili che servono per la pasqua
 	var pasqua = false;
 	var primavera = false; //questa variabile di attiva dopo il 21 marzo, pasqua è la prima domenica di luna piena dopo il 21 marzo
 	var iniziaAdAspettarePasqua = false; //si attiva quando passata la primavera arriva la luna piena
-	var counterGiorni = 0;
-	var settimana = 1;
+	
+    var IVavvento = false;
+    var natale = 359;
+    if(annoBisesto==true){ natale=360; }
 	
 	for(mese in calSettings.mesi ){
 		
@@ -115,7 +130,7 @@ function calGen(anno,prefs){
 		var numero = 1;
 		var festivo;
 		
-
+        //un santo per ogni giorno, passo tutti i santi e genero il calendario di base
 		for(santo in calSettings.mesi[mese]['santi']){
 			calendario[mese]['giorni'][numero] = {};
 			counterGiorni ++;
@@ -151,6 +166,11 @@ function calGen(anno,prefs){
 				calendario[mese]['giorni'][numero]['settimana'] = settimana;
 				settimana++;
 			}
+            
+            if(calSettings.festivi[mese][numero] ){
+                calendario[mese]['giorni'][numero]['santo'] = calSettings.festivi[mese][numero];
+                calendario[mese]['giorni'][numero]['festivo'] = true;
+            }
 			
 			
 			
@@ -165,9 +185,16 @@ function calGen(anno,prefs){
 			
 			if(pasqua==false & iniziaAdAspettarePasqua == true){
 				if(day==0){
-					pasqua = [mese,numero,calendario[mese]['giorni'][numero]['giorno'],counterGiorni];
+					//pasqua = [mese,numero,calendario[mese]['giorni'][numero]['giorno'],counterGiorni];
+                    pasqua = counterGiorni;
 				}
 			}
+            
+            
+            //calcolo IV di avvento, ultima domenica prima di natale
+            if(IVavvento == false & mese=='dic' & counterGiorni>(natale-7) & day == 0) {
+                IVavvento = counterGiorni;
+            }
 			
 			
 			//imposto a 0 i giorno quando arrivano alla fine della settimana oppure aggiungo di uno
@@ -179,18 +206,55 @@ function calGen(anno,prefs){
 			
 			numero ++;
 			
-			
-			
 		}
 		
 		numero = 1;
 		nMese ++;
 		
 	}
-	
-	alert(calendario['dic']['giorni'][31]['settimana']);
-	
-}
+    
+    
+    //aggiunta dei giorni mobili
+    for (mese in calendario){
+        for(giorno in calendario[mese]['giorni']){
+            
+            var giornoCorrente = calendario[mese]['giorni'][giorno]['counter'];
+            
+            for(festaMobile in calSettings['giorni mobili'] ){
+                
+                //starter descrive il giorno di partenza da cui calcolare la festa mobile
+                var starter;
+                if(calSettings['giorni mobili'][festaMobile]['start']=='pasqua'){
+                    starter = pasqua;
+                }else if(calSettings['giorni mobili'][festaMobile]['start']=='IVavvento'){
+                    starter = IVavvento;
+                }else{
+                    alert('attenzione stai tentando di calcolare una festa mobile non prevista');
+                }
+                
+                var giornoMobile = starter + calSettings['giorni mobili'][festaMobile]['giorno'];
+                
+                if(giornoCorrente == giornoMobile){
+                    calendario[mese]['giorni'][giorno]['santo'] = calSettings['giorni mobili'][festaMobile]['nome'];
+                    
+                    if(calSettings['giorni mobili'][festaMobile]['festivo'] == true){
+                        calendario[mese]['giorni'][giorno]['festivo'] = true;
+                    }
+                }           
+            }           
+        }
+    }
+        
+    return calendario;
+    
+} //fine di calGen
+
+
+/*
+****************************
+* 
+****************************
+*/
 
 
 
@@ -202,8 +266,6 @@ function calGen(anno,prefs){
 * utility *****
 ***************
 */
-
-
 
 
 
@@ -230,18 +292,25 @@ function bisestileCalc (year) {
 //attenzione! da perfezionare, potrebbe sbagliare di un giorno
 */
 
-function faseLuna(DG) { // RITORNA 5 SE C'E' LA LUNA PIENA
+/*
+
+da verificare
+https://gist.github.com/endel/dfe6bb2fbe679781948c
+
+*/
+
+function faseLuna(DG) { // RITORNA 3 SE C'E' LA LUNA PIENA
 	DR = new Date(2000,0,1);	// data di riferimento
 	TL = (((DG - DR) / 1000) + 2114500) % 2551443;
 	RV = 1
-	if (TL < 2508243){RV=0;} //8 // CALANTE DA ULTIMO
-	if (TL < 1956782.25){RV=4;} // ULTIMO QUARTO
-	if (TL < 1870382.25){RV=0;} //6 // CALANTE DA PIENA
-	if (TL < 1318921.5){RV=3;} // PIENA
-	if (TL < 1232521.5){RV=0;} //4 // CRESCENTE DA PRIMO
-	if (TL < 681060.75){RV=2;} // PRIMO QUARTO
-	if (TL < 594660.75){RV=0;} //2 // CRESCENTE DA NUOVA
-	if (TL < 43200){RV=1;} // NUOVA
+	if (TL < 2508243){RV=0;} //0 // CALANTE DA ULTIMO
+	if (TL < 1956782.25){RV=4;} // 4 ULTIMO QUARTO
+	if (TL < 1870382.25){RV=0;} //0 // CALANTE DA PIENA
+	if (TL < 1318921.5){RV=3;} // 3  PIENA
+	if (TL < 1232521.5){RV=0;} //0 // CRESCENTE DA PRIMO
+	if (TL < 681060.75){RV=2;} // 2 PRIMO QUARTO
+	if (TL < 594660.75){RV=0;} //0 // CRESCENTE DA NUOVA
+	if (TL < 43200){RV=1;} // 1 NUOVA
 	return RV
 }
 

@@ -450,6 +450,12 @@ var calSettings = {
 			'1' : 'Maria S.ma Madre di Dio',
 			'6' : 'Epifania del Signore'
 		},
+        feb:{
+            
+        },
+        mar:{
+            
+        },
 		'apr' : {
 			'25' : 'S. Marco Ev - Anniversario Liberazione'
 		},
@@ -459,9 +465,18 @@ var calSettings = {
 		'giu' : {
 			'2' : 'Festa della Repubblica'
 		},
+        'lug':{
+            
+        },
 		'ago' : {
 			'15' : 'Assunzione B.V.M.'
 		},
+        'set' : {
+            
+        },
+        ott : {
+            
+        },
 		'nov' : {
 			'1' : 'Tutti i Santi'
 		},
@@ -479,124 +494,144 @@ var calSettings = {
 		//calcolati partendo dalla pasqua
 		'marGrasso' : {
 			'nome' : 'Martedì Grasso',
-			'giorno' : pasqua-47,
-			'festivo' : false
+			'giorno' : -47,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'ceneri' : {
 			'nome' : 'Le Ceneri',
-			'giorno' : pasqua-46,
-			'festivo' : false
+			'giorno' : -46,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'Iquaresima' : {
 			'nome' : 'I di Quaresima',
-			'giorno' : pasqua-42,
-			'festivo' : true
+			'giorno' : -42,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'IIquaresima' : {
 			'nome' : 'II di Quaresima',
-			'giorno' : pasqua-35,
-			'festivo' : true
+			'giorno' : -35,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'IIIquaresima' : {
 			'nome' : 'III di Quaresima',
-			'giorno' : pasqua-28,
-			'festivo' : true
+			'giorno' : -28,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'IVquaresima' : {
 			'nome' : 'IV di Quaresima',
-			'giorno' : pasqua-21,
-			'festivo' : true
+			'giorno' : -21,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'Vquaresima' : {
 			'nome' : 'V di Quaresima',
-			'giorno' : pasqua-14,
-			'festivo' : true
+			'giorno' : -14,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'palme' : {
 			'nome' : 'Le Palme',
-			'giorno' : pasqua-7,
-			'festivo' : true
+			'giorno' : -7,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'pasqua' : {
 			'nome' : 'Pasqua di Resurrezione',
-			'giorno' : pasqua,
-			'festivo' : true
+			'giorno' : 0,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'pasquetta' : {
 			'nome' : 'Lunedì dell\' Angelo',
-			'giorno' : pasqua +1,
-			'festivo' : true
+			'giorno' :  +1,
+			'festivo' : true,
+            'start' : 'pasqua'
 		},
 		
 		'albis' : {
 			'nome' : 'D. in Albis',
-			'giorno' : pasqua+7,
-			'festivo' : false
+			'giorno' : +7,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'ascensione' : {
 			'nome' : 'Ascensione del Signore',
-			'giorno' : pasqua+42,
-			'festivo' : false
+			'giorno' : +42,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'pentecoste' : {
 			'nome' : 'Pentecoste',
-			'giorno' : pasqua+49,
-			'festivo' : false
+			'giorno' : +49,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'trinita' : {
 			'nome' : 'SS. Trinità',
-			'giorno' : pasqua+56,
-			'festivo' : false
+			'giorno' : +56,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		'corDomini' : {
 			'nome' : 'Corpus Domini',
-			'giorno' : pasqua+63,
-			'festivo' : false
+			'giorno' : +63,
+			'festivo' : false,
+            'start' : 'pasqua'
 		},
 		
 		
 		//calcolati partendo dal natale - la IV di avvento è la domenica subito prima di nalate
 		'cristoRe' : {
 			'nome' : 'Cristo Re',
-			'giorno' : IVavvento-28,
-			'festivo' : false
+			'giorno' : -28,
+			'festivo' : false,
+            'start' : 'IVavvento'
 		},
 		
 		'Iavvento' : {
 			'nome' : 'I di Avvento',
-			'giorno' : IVavvento-21,
-			'festivo' : true
+			'giorno' : -21,
+			'festivo' : true,
+            'start' : 'IVavvento'
 		},
 		
 		'IIavvento' : {
 			'nome' : 'II di Avvento',
-			'giorno' : IVavvento-14,
-			'festivo' : true
+			'giorno' : -14,
+			'festivo' : true,
+            'start' : 'IVavvento'
 		},
 		
 		'IIIavvento' : {
 			'nome' : 'III di Avvento',
-			'giorno' : IVavvento-7,
-			'festivo' : true
+			'giorno' : -7,
+			'festivo' : true,
+            'start' : 'IVavvento'
 		},
 		
 		'IVavvento' : {
 			'nome' : 'IV di Avvento',
-			'giorno' : IVavvento,
-			'festivo' : true
+			'giorno' : 0,
+			'festivo' : true,
+            'start' : 'IVavvento'
 		}
 	}, //fine dei giorni mobili
 	
