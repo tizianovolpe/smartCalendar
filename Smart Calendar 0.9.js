@@ -4,11 +4,26 @@ var scriptLink = '#';
 var settingsFile = 'calendario.js'
 
 var prefs = {
+    'startDay' : [1,'gen'] , //il giorno da cui deve iniziar il calcolo del calendario. Default 1 gennaio
+    'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre
 	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]','[fine paragrafo]'],
 	'santi' : true,
 	'zeroNum1cifra' : true, //inserisce uno zero davanti ai numeri a una cifra
 	'nomeMese' : 3, // quanto lungo deve essere il nome del mese, se impostato su 0 non viene tagliato
-	'nomeGiorno' : 3
+	'nomeGiorno' : 3,
+    'creaNuoviStili' : false, //se true crea dei nuovi stili di paragrafo e carattere anche se nel documento esistno già
+    'prefissoNuoviStili' : 'prefisso_', //il prefisso da usare per gli stili di paragrafo (indispensabile se crea nuovi stili è true)
+    //gli stili da generare paragrafo e carattere
+    'stileParFestivi': true,
+    'stileParFeriali' : true,
+    'stileParMesi': true,
+    'stileCarMesi' : true,
+    'stileCarNumero' : true,
+    'stileCarGiorno' : true,
+    'stileCarSanto' : true,
+    'stileCarLune' : true,
+    'stileCarCounter' : true,
+    'stileCarSettimana' : true,
 }
 
 
@@ -30,8 +45,10 @@ try {
 
 
 if(calendarFile==true){
-	calGen(2018,prefs);
+    writeCalendar(calGen(2018,prefs),prefs);
 }
+
+
 
 
 /*
@@ -43,6 +60,9 @@ if(calendarFile==true){
 ***********************************
 
 calendario = {
+
+    'anno' : 2018, //l'anno scelto
+    'mesi' : {
 		'gen': {
 			'nome':'gennaio',
 			'giorni:{
@@ -59,6 +79,7 @@ calendario = {
 		},
         'gli altri mesi'{
             ....
+        }
     }
 }
 
@@ -70,6 +91,9 @@ function calGen(anno,prefs){
 	
 	//la variabile che conterrà tutto il calendario
 	var calendario = {};
+    calendario['anno'] = anno;
+    calendario['mesi'] = {};
+    var mesi = calendario['mesi'];
 	
 	//cancello da calSettings il 29 febbrario nel caso in cui l'anno non sia bisestile
 	var bisestile = bisestileCalc(anno);
@@ -123,72 +147,76 @@ function calGen(anno,prefs){
 	
 	for(mese in calSettings.mesi ){
 		
-		calendario[mese] = {};
-		calendario[mese]['nome'] = cut(calSettings.mesi[mese]['nome'],prefs.nomeMese);
-		calendario[mese]['giorni'] = {};
+		mesi[mese] = {};
+		mesi[mese]['nome'] = cut(calSettings.mesi[mese]['nome'],prefs.nomeMese);
+		mesi[mese]['giorni'] = {};
 		
 		var numero = 1;
 		var festivo;
 		
         //un santo per ogni giorno, passo tutti i santi e genero il calendario di base
 		for(santo in calSettings.mesi[mese]['santi']){
-			calendario[mese]['giorni'][numero] = {};
+			mesi[mese]['giorni'][numero] = {};
 			counterGiorni ++;
 			
 			
 			
 			//aggiongo lo zero davanti ai numeri ad una cifra se richiesto
 			if(prefs.zeroNum1cifra == false){
-				calendario[mese]['giorni'][numero]['numero'] = numero;
+				mesi[mese]['giorni'][numero]['numero'] = numero;
 			}else{
 				if(String(numero).length == 1) {var numm = '0'+String(numero); }else{var numm = String(numero);}
-				calendario[mese]['giorni'][numero]['numero'] = numm;
+				mesi[mese]['giorni'][numero]['numero'] = numm;
 			}
 			
 			
-			calendario[mese]['giorni'][numero]['giorno'] = cut(calSettings.giorni[day],prefs.nomeGiorno);
-			calendario[mese]['giorni'][numero]['santo'] = calSettings.mesi[mese]['santi'][santo];
-			calendario[mese]['giorni'][numero]['counter'] = counterGiorni;
+			mesi[mese]['giorni'][numero]['giorno'] = cut(calSettings.giorni[day],prefs.nomeGiorno);
+			mesi[mese]['giorni'][numero]['santo'] = calSettings.mesi[mese]['santi'][santo];
+			mesi[mese]['giorni'][numero]['counter'] = counterGiorni;
 			
 			//festivo o feriale
 			if(day==0){
-				calendario[mese]['giorni'][numero]['festivo'] = true;
+				mesi[mese]['giorni'][numero]['festivo'] = true;
 			}else{
-				calendario[mese]['giorni'][numero]['festivo'] = false;
+				mesi[mese]['giorni'][numero]['festivo'] = false;
 			}
 			
 			//aggiunta lune
 			var luna = faseLuna (new Date(parseInt(anno),nMese,numero));
-			calendario[mese]['giorni'][numero]['luna']=luna;
+			mesi[mese]['giorni'][numero]['luna']=luna;
 			
 			
 			if(day==1){
-				calendario[mese]['giorni'][numero]['settimana'] = settimana;
+				mesi[mese]['giorni'][numero]['settimana'] = settimana;
 				settimana++;
 			}
             
             if(calSettings.festivi[mese][numero] ){
-                calendario[mese]['giorni'][numero]['santo'] = calSettings.festivi[mese][numero];
-                calendario[mese]['giorni'][numero]['festivo'] = true;
+                mesi[mese]['giorni'][numero]['santo'] = calSettings.festivi[mese][numero];
+                mesi[mese]['giorni'][numero]['festivo'] = true;
             }
 			
 			
 			
 			//calcolo pasqua
 			if(primavera==false & mese == 'mar' & numero == 21) {
+                //È il 21 marzo, primavera
 				primavera = true;
 			}
 			
 			if(iniziaAdAspettarePasqua==false & primavera==true & luna==3){
+                //È la prima luna piena di piemavera
 				iniziaAdAspettarePasqua = true;
 			}
 			
 			if(pasqua==false & iniziaAdAspettarePasqua == true){
 				if(day==0){
-					//pasqua = [mese,numero,calendario[mese]['giorni'][numero]['giorno'],counterGiorni];
+					//la pirma domenica di luna piena dopo il 21 marzo. Pasqua
                     pasqua = counterGiorni;
 				}
 			}
+            
+            
             
             
             //calcolo IV di avvento, ultima domenica prima di natale
@@ -215,10 +243,10 @@ function calGen(anno,prefs){
     
     
     //aggiunta dei giorni mobili
-    for (mese in calendario){
-        for(giorno in calendario[mese]['giorni']){
+    for (mese in mesi){
+        for(giorno in mesi[mese]['giorni']){
             
-            var giornoCorrente = calendario[mese]['giorni'][giorno]['counter'];
+            var giornoCorrente = mesi[mese]['giorni'][giorno]['counter'];
             
             for(festaMobile in calSettings['giorni mobili'] ){
                 
@@ -235,15 +263,17 @@ function calGen(anno,prefs){
                 var giornoMobile = starter + calSettings['giorni mobili'][festaMobile]['giorno'];
                 
                 if(giornoCorrente == giornoMobile){
-                    calendario[mese]['giorni'][giorno]['santo'] = calSettings['giorni mobili'][festaMobile]['nome'];
+                    mesi[mese]['giorni'][giorno]['santo'] = calSettings['giorni mobili'][festaMobile]['nome'];
                     
                     if(calSettings['giorni mobili'][festaMobile]['festivo'] == true){
-                        calendario[mese]['giorni'][giorno]['festivo'] = true;
+                        mesi[mese]['giorni'][giorno]['festivo'] = true;
                     }
                 }           
             }           
         }
     }
+    
+    //alert(calendario['mesi']['mar']['giorni'][31]['luna']);
         
     return calendario;
     
@@ -252,9 +282,29 @@ function calGen(anno,prefs){
 
 /*
 ****************************
-* 
+* Funzione che scrive in indesign il calendario generato
 ****************************
 */
+
+function writeCalendar(calendario,prefs){
+    
+    var myDocument= app.documents.item(0);	
+    var myPage = myDocument.pages.item(0);
+    
+    //verifico se esiste già un box di testo selezionat
+    //se esiste scrivo il calendario dentro alla selezione
+    //se non esiste genero una casella di testo nella prima pagina del documento: dimensioni A4 CON CORNICE DI 10 mm
+    if(app.selection.length==1){
+		var myTextFrame = app.selection[0].insertionPoints[0];
+	}else{ 
+	    var myTextFrame = myPage.textFrames.add();
+		myTextFrame.geometricBounds = [10, 10, 287 , 200];
+	}
+    
+    //importo i font attivi
+    var fonts = myDocument.fonts;
+    
+}
 
 
 
@@ -288,15 +338,10 @@ function bisestileCalc (year) {
 
 
 
-/*FUNZIONE PER IL CALCOLO DELLA FASE LUNARE PER IL GIORNO
-//attenzione! da perfezionare, potrebbe sbagliare di un giorno
-*/
-
-/*
-
-da verificare
-https://gist.github.com/endel/dfe6bb2fbe679781948c
-
+/* 
+* FUNZIONE PER IL CALCOLO DELLA FASE LUNARE
+* Attenzione! da perfezionare, potrebbe sbagliare di un giorno
+* @see http://forum.html.it/forum/showthread/t-905453.html
 */
 
 function faseLuna(DG) { // RITORNA 3 SE C'E' LA LUNA PIENA
@@ -313,6 +358,8 @@ function faseLuna(DG) { // RITORNA 3 SE C'E' LA LUNA PIENA
 	if (TL < 43200){RV=1;} // 1 NUOVA
 	return RV
 }
+
+
 
 
 //funzione che taglia il nome dei giorni e dei mesi
