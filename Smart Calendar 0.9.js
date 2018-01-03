@@ -13,6 +13,7 @@ var prefs = {
 	'nomeGiorno' : 3,
 	'scriviNomeMese' : true,
 	'interruzioneCorniceMese' : true,
+	'tipoLuna' : 'lune3',
 	
     //gli stili da generare paragrafo e carattere	
 	//se crea nuovi stili è false gli stili già essitenti
@@ -72,6 +73,15 @@ var prefs = {
 				'name' : 'settimana',
 			}
 		}
+	},
+	'specialChars' : {
+		'fineParagrafo' : '\r',
+		'chBeforeMonth': '', //il carattere che compare prima del mese
+		'chAfterMonth' : '\r', // il carattere che compare dopo il mese
+		'intRigaForzata' : '\n',
+		//'intPagina' : SpecialCharacters.pageBreak,
+		//'intCornice' : ScpecialCharacters.frameBreak,
+		'tabulazione' : '\t'
 	}
 }
 
@@ -531,20 +541,89 @@ function writeCalendar(calendario,prefs){
 	
 	var c = 0;
 	
-	myTextFrame.parentStory.insertionPoints.item(-1).contents = ' ';
+	//inizializzo la casella di testo
+	myTextFrame.parentStory.insertionPoints.item(-1).contents = '';
+	
+	var ordine = prefs.ordineGenerazione;
+	var moons = prefs.stylesPrefs[prefs.tipoLuna];
+	
+	alert(moons);
 	
 	for (mese in calendario['mesi']){
 		
 		if(prefs.interruzioneCorniceMese == true & c!=0){
-			myTextFrame.parentStory.characters.item(-1).contents=SpecialCharacters.frameBreak;
+			myTextFrame.parentStory.insertionPoints.item(-1).contents=SpecialCharacters.frameBreak;
 		}
 		
 		if(prefs.scriviNomeMese == true){
-			var nome = calendario['mesi'][mese]['nome'].toString();
-			alert(nome);
-			myTextFrame.parentStory.characters.item(-1).contents = ' ';
-			myTextFrame.parentStory.characters.item(-1).contents = 'prova';
+			myTextFrame.parentStory.insertionPoints.item(-1).contents = prefs.specialChars.chBeforeMonth;
+			myTextFrame.parentStory.insertionPoints.item(-1).contents = calendario['mesi'][mese]['nome'];
+			myTextFrame.parentStory.insertionPoints.item(-1).contents = prefs.specialChars.chAfterMonth;
+			
+			myTextFrame.parentStory.paragraphs.item(-1).applyParagraphStyle(stileParMesi, true);
+			myTextFrame.parentStory.paragraphs.item(-1).applyCharacterStyle(stileCarMesi,true);
+			
+		}else{
+			myTextFrame.parentStory.insertionPoints.item(-1).contents = ' '; // da togliere
 		}
+		
+		
+		for(giorno in calendario['mesi'][mese]['giorni']) {
+			var thisDay = calendario['mesi'][mese]['giorni'][giorno];
+			
+			//passo l'ordine di generazione e creo i blocco giorno
+			for(ch in ordine){
+				
+				if(ordine[ch] == '[giorno]'){
+					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarGiorno,true);
+		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['giorno'];
+				}else if(ordine[ch] == '[numero]'){
+					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarNumero,true);
+		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['numero'];
+				}else if(ordine[ch] == '[santo]'){
+					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarSanto,true);
+		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['santo'];
+				}else if(ordine[ch] == '[luna]'){
+					
+					
+					if(thisDay['luna']!=0){
+						
+						myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarLune,true);
+						
+						if(thisDay['luna'] == 1 ){
+							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[0];
+						}else if(thisDay['luna'] == 2 ){
+							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[1];
+						}else if(thisDay['luna'] == 4 ){
+							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[2];
+						}else if(thisDay['luna'] == 4 ){
+							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[3];
+						}
+					}
+					
+		        	
+				}else {
+					
+				}
+				
+			}
+			
+			
+			
+			
+			myTextFrame.parentStory.insertionPoints.item(-1).contents = '\r';
+			
+			
+			
+			if(thisDay.festivo == true) {
+				myTextFrame.parentStory.paragraphs.item(-1).applyParagraphStyle(stileParFestivi, true);
+			}else{
+				myTextFrame.parentStory.paragraphs.item(-1).applyParagraphStyle(stileParFeriali, true);
+			}
+			
+		}
+		
+		
 	}
     
 }
