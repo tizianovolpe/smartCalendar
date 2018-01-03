@@ -11,19 +11,68 @@ var prefs = {
 	'zeroNum1cifra' : true, //inserisce uno zero davanti ai numeri a una cifra
 	'nomeMese' : 3, // quanto lungo deve essere il nome del mese, se impostato su 0 non viene tagliato
 	'nomeGiorno' : 3,
-    'creaNuoviStili' : false, //se true crea dei nuovi stili di paragrafo e carattere anche se nel documento esistno già
-    'prefissoNuoviStili' : 'prefisso_', //il prefisso da usare per gli stili di paragrafo (indispensabile se crea nuovi stili è true)
-    //gli stili da generare paragrafo e carattere
-    'stileParFestivi': true,
-    'stileParFeriali' : true,
-    'stileParMesi': true,
-    'stileCarMesi' : true,
-    'stileCarNumero' : true,
-    'stileCarGiorno' : true,
-    'stileCarSanto' : true,
-    'stileCarLune' : true,
-    'stileCarCounter' : true,
-    'stileCarSettimana' : true,
+	'scriviNomeMese' : true,
+	'interruzioneCorniceMese' : true,
+	
+    //gli stili da generare paragrafo e carattere	
+	//se crea nuovi stili è false gli stili già essitenti
+	'stylesPrefs' : {
+		'createNewStyles' : true, //se true crea dei nuovi stili di paragrafo e carattere anche se nel documento esistno già
+		'prefissoStili' : 'prefisso_', //il prefisso da usare per gli stili di paragrafo (indispensabile se crea nuovi stili è true),
+		'fontLune' : 'Moon Phases - smartmix.it',
+		'lune1' : ['a','b','c','d'],
+		'lune2' : ['A','B','C','D'],
+		'lune3' : ['e','f','g','h'],
+		
+		'styles' : {
+			'stileParFestivi' : {
+				'active' : true,
+				'name' : 'festivi',
+			},
+			'stileParFeriali' : {
+				'active' : true,
+				'name' : 'feriali',
+			},
+			'stileParMesi' : {
+				'active' : true,
+				'name' : 'mesi',
+			},
+			'stileCarMesi' : {
+				'active' : true,
+				'name' : 'mesi',
+			},
+			'stileCarNumero' : {
+				'active' : true,
+				'name' : 'numero',
+			},
+			
+			'stileCarGiorno' : {
+				'active' : true,
+				'name' : 'giorno',
+			},
+			
+			'stileCarSanto' : {
+				'active' : true,
+				'name' : 'santo',
+			},
+			
+			'stileCarLune' : {
+				'active' : true,
+				'name' : 'lune',
+				'type' : 'lune3',
+			},
+			
+			'stileCarCounter' : {
+				'active' : true,
+				'name' : 'counter',
+			},
+			
+			'stileCarSettimana' : {
+				'active' : true,
+				'name' : 'settimana',
+			}
+		}
+	}
 }
 
 
@@ -303,6 +352,200 @@ function writeCalendar(calendario,prefs){
     
     //importo i font attivi
     var fonts = myDocument.fonts;
+	
+	/*
+	***************************************
+	* creazione degli stili di paragrafo e di carattere
+	***************************************
+	*/
+	
+	var style2gen;
+	
+	//stile paragrafo festivi
+	style2gen = 'stileParFestivi';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileParFestivi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+			}catch(errore){
+				var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile paragrafo feriali
+	style2gen = 'stileParFeriali';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+			}catch(errore){
+				var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile paragrafo mesi
+	style2gen = 'stileParMesi';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileParMesi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+			}catch(errore){
+				var stileParMesi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileParMesi = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile carattere mesi
+	style2gen = 'stileCarMesi';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarMesi = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarMesi = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarMesi = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	//stile carattere numero
+	style2gen = 'stileCarNumero';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarNumero = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarNumero = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarNumero = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile carattere giorno
+	style2gen = 'stileCarGiorno';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarGiorno = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarGiorno = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarGiorno = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile carattere santo
+	style2gen = 'stileCarSanto';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarSanto = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarSanto = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarSanto = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	//stile carattere lune
+	style2gen = 'stileCarLune';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		var fontLune = prefs.stylesPrefs.fontLune;
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarLune = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+				try{stileCarLune.appliedFont = app.fonts.item(fontLune);}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+			}catch(errore){
+				var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+				try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+			}
+		}else{
+			var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+			try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+		}
+    }
+	
+	
+	
+	//stile carattere counter
+	style2gen = 'stileCarCounter';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarCounter = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarCounter = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarCounter = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	
+	
+	//stile carattere settimana
+	style2gen = 'stileCarSettimana';
+    if( prefs.stylesPrefs.styles[style2gen].active == true){
+		
+		if(prefs.stylesPrefs.createNewStyles == true){
+			try{
+				var stileCarSettimana = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
+			}catch(errore){
+				var stileCarSettimana = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+			}
+		}else{
+			var stileCarSettimana = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
+		}
+    }
+	
+	var c = 0;
+	
+	myTextFrame.parentStory.insertionPoints.item(-1).contents = ' ';
+	
+	for (mese in calendario['mesi']){
+		
+		if(prefs.interruzioneCorniceMese == true & c!=0){
+			myTextFrame.parentStory.characters.item(-1).contents=SpecialCharacters.frameBreak;
+		}
+		
+		if(prefs.scriviNomeMese == true){
+			var nome = calendario['mesi'][mese]['nome'].toString();
+			alert(nome);
+			myTextFrame.parentStory.characters.item(-1).contents = ' ';
+			myTextFrame.parentStory.characters.item(-1).contents = 'prova';
+		}
+	}
     
 }
 
