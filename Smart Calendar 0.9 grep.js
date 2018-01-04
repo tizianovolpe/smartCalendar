@@ -368,6 +368,7 @@ function writeCalendar(calendario,prefs){
 	
 	var ordine = prefs.ordineGenerazione;
 	var moons = prefs.stylesPrefs[prefs.tipoLuna];
+    var c = 0;
 		
 	for (mese in calendario['mesi']){
 		
@@ -429,11 +430,13 @@ function writeCalendar(calendario,prefs){
 			
 			calendarText += '</ps festivo'+thisDay.festivo+'>';
 			calendarText += '\r';
+            c++;
 			
 		}
 	}
         
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
+    applyStyles();
     
 }
 
