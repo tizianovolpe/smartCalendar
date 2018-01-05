@@ -25,7 +25,7 @@ var prefs = {
 	//se crea nuovi stili è false gli stili già essitenti
 	'stylesPrefs' : {
 		'createNewStyles' : true, //se true crea dei nuovi stili di paragrafo e carattere anche se nel documento esistno già
-		'prefissoStili' : 'prefisso_', //il prefisso da usare per gli stili di paragrafo (indispensabile se crea nuovi stili è true),
+		'prefissoStili' : '', //il prefisso da usare per gli stili di paragrafo (indispensabile se crea nuovi stili è true),
 		'fontLune' : 'Moon Phases - smartmix.it',
 		'lune1' : ['a','b','c','d'],
 		'lune2' : ['A','B','C','D'],
