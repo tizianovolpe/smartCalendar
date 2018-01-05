@@ -34,10 +34,10 @@ var calSettings = {
 				'24' : 'S. Francesco di S.',
 				'25' : 'Conversione di S.Paolo',
 				'26' : 'S. Timoteo',
-				'27' : 'S. Angela M.',
-				'28' : 'S. Tommaso d\'A. ',
+				'27' : 'S. Angela M.',
+				'28' : 'S. Tommaso d\'A. ',
 				'29' : 'S. Costanzo ',
-				'30' : 'S. Giacinta M.',
+				'30' : 'S. Giacinta M.',
 				'31' : 'S. Giovanni Bosco'
 			}
 		},
