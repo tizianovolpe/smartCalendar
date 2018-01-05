@@ -104,8 +104,29 @@ try {
 
 
 if(calendarFile==true){
-    writeCalendar(calGen(2018,prefs),prefs);
+    //writeCalendar(calGen(2018,prefs),prefs);
+	mainWindow();
 }
+
+
+function mainWindow(){
+	var oggi = new Date();
+	
+	var w = new Window('dialog',nome);
+	
+	var presetPanel = w.add('panel',[0,0,600,50],'Preset');
+		presetPanel.orientation = 'row';
+		var newPreset = presetPanel.add('panel',300,0,600,50);
+			var savePreset = newPreset.add ('button',[7,5,127,32].'Salva predefinito...');
+			var nomePreset = newPreset.add ('edittext',[132,5,287,32],'New Preset');
+	
+	
+	
+	w.show();
+	
+	
+}
+
 
 
 
