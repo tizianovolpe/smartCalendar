@@ -1,5 +1,5 @@
 var nome = "Smart Calendar";
-var versione = "0.9";
+var versione = "1.0 Beta";
 var scriptLink = '#';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
@@ -11,7 +11,7 @@ var prefs = {
     'startDay' : [1,'gen'] , //il giorno da cui deve iniziar il calcolo del calendario. Default 1 gennaio
     'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre
 	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]'],
-	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[inter. riga forzata]"],
+	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[numero giorno]","[numero settimana]","[inter. riga forzata]"],
 	'santi' : true,
 	'zeroNum1cifra' : true, //inserisce uno zero davanti ai numeri a una cifra
 	'nomeMese' : 3, // quanto lungo deve essere il nome del mese, se impostato su 0 non viene tagliato
@@ -34,49 +34,49 @@ var prefs = {
 		'styles' : {
 			'stileParFestivi' : {
 				'active' : true,
-				'name' : 'festivi',
+				'name' : 'Festivi',
 			},
 			'stileParFeriali' : {
 				'active' : true,
-				'name' : 'feriali',
+				'name' : 'Feriali',
 			},
 			'stileParMesi' : {
 				'active' : true,
-				'name' : 'mesi',
+				'name' : 'Mesi',
 			},
 			'stileCarMesi' : {
 				'active' : true,
-				'name' : 'mesi',
+				'name' : 'Mesi',
 			},
 			'stileCarNumero' : {
 				'active' : true,
-				'name' : 'numero',
+				'name' : 'Numero',
 			},
 			
 			'stileCarGiorno' : {
 				'active' : true,
-				'name' : 'giorno',
+				'name' : 'Giorno',
 			},
 			
 			'stileCarSanto' : {
 				'active' : true,
-				'name' : 'santo',
+				'name' : 'Santo',
 			},
 			
 			'stileCarLune' : {
 				'active' : true,
-				'name' : 'lune',
+				'name' : 'Lune',
 				'type' : 'lune3',
 			},
 			
 			'stileCarCounter' : {
 				'active' : true,
-				'name' : 'counter',
+				'name' : 'Numero giorno',
 			},
 			
 			'stileCarSettimana' : {
 				'active' : true,
-				'name' : 'settimana',
+				'name' : 'Numero settimana',
 			}
 		}
 	},
@@ -96,14 +96,14 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
-var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]'+ sepL + '[fine paragrafo]'];
+var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]'];
 
-var smartmixPreset = '\
+/*var smartmixPreset = '\
 tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
 Ski club Fossò tavolo|||false|||true|||true|||abbreviati|||completi|||1|||[numero]///[inter. riga forzata]///[giorno]///[fine paragrafo]\
 Auto Carrozzeria Moderna|||false|||true|||true|||iniziale|||completi|||1|||[giorno]///[tab]///[numero]///[fine paragrafo]\
 parrocchia Cazzago|||true|||true|||true|||abbreviati|||abbreviati|||1|||[numero]///[tab]///[luna]///[inter. riga forzata]///[tab]///[giorno]///[tab]///[santo]///[fine paragrafo]\
-Calendario coin|||false|||true|||false|||abbreviati|||abbreviati|||1|||[tab]///[numero]///[inter. riga forzata]///[tab]///[tab]///[giorno]///[inter. riga forzata]///[tab]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]';
+Calendario coin|||false|||true|||false|||abbreviati|||abbreviati|||1|||[tab]///[numero]///[inter. riga forzata]///[tab]///[tab]///[giorno]///[inter. riga forzata]///[tab]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]';*/
 
 
 
@@ -133,7 +133,7 @@ function mainWindow(){
 	var oggi = new Date();
 	var myReturn = false;
 	
-	var w = new Window('dialog',nome);
+	var w = new Window('dialog',nome+' '+versione);
 	
 	var presetPanel = w.add('panel',[0,0,600,50],'Preset');
 		presetPanel.orientation = 'row';
@@ -142,40 +142,104 @@ function mainWindow(){
 			var nomePreset = newPreset.add ('edittext',[132,5,287,32],'New Preset');
 	
 			savePreset.onClick = function(){
-				var currentSettings = new Array();				
+				var currentSettings = new Array();
+				
+				currentSettings[0] = nomePreset.text;
+				currentSettings[1] = startMese.value;
+				currentSettings[2] = pgBreakAfterM.value;
+				currentSettings[3] = nZero.value;
+		
+				if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
+				if(mesiAbbreviati.value==true){ currentSettings[4] = 'abbreviati';}		
+		
+				if(giorniCompleti.value==true){ currentSettings[5] = 'completi'; }
+				if(giorniAbbreviati.value==true){ currentSettings[5] = 'abbreviati';}
+				if(giorniIniziale.value==true){ currentSettings[5] = 'iniziale';}
+		
+				if(luna1.value==true){ currentSettings[6] = 1; }
+				if(luna2.value==true){ currentSettings[6] = 2;}
+				if(luna3.value==true){ currentSettings[6] = 3;}
+				
+				if(prefisso.text==''){
+					currentSettings[7]='vuoto';
+				}else{
+					currentSettings[7]=prefisso.text;
+				}
+		
+		
+				if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
+				if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
+				if(finePag.value==true){ currentSettings[8] = 'pagina';}
+				
+				var currentGenerationList = String(list.items).split(',');
+				currentSettings[9] = currentGenerationList.join(sepL);
+				
+				addPreset(currentSettings);
+				alert('Il nuovo predefinito è stato salvato.');
+				
+				presetsList.add('item',nomePreset.text);
+				
+				
 			}
 			
 		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
 			var presetsList = presetPanel.add('dropdownlist',[125,10,270,30],getPresetsName());
 			presetsList.onChange = function(){
 				var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
-				//prefs.ordineGenerazione = preset2use[preset2use.length-1].split(sepL);
+								
+				for (k in preset2use){
+					if(preset2use[k] == 'true'){
+						preset2use[k] = true;
+					}else if (preset2use[k] == 'false'){
+						preset2use[k]= false;
+			 		}
+				}
 				
-				alert(preset2use);
+				startMese.value = preset2use[1];
+				pgBreakAfterM.value = preset2use[2];
+				nZero.value = preset2use[3];
 				
-				/*
-				startMese.value
+				if (preset2use[4]=='completi'){ mesiCompleti.value = true; }else{mesiAbbreviati.value=true;}
 				
-				prefs.scriviNomeMese = startMese.value;
-		prefs.interruzioneCorniceMese = pgBreakAfterM.value;
-		prefs.zeroNum1cifra = nZero.value;
-		
-		if(mesiCompleti.value==true){ prefs.nomeMese = 0; }
-		if(mesiAbbreviati.value==true){ prefs.nomeMese = 3;}		
-		
-		if(giorniCompleti.value==true){ prefs.nomeGiorno = 0; }
-		if(giorniAbbreviati.value==true){ prefs.nomeGiorno = 3;}
-		if(giorniIniziale.value==true){ prefs.nomeGiorno = 1;}
-		
-		if(luna1.value==true){ prefs.tipoLuna = 'lune1'; }
-		if(luna2.value==true){ prefs.tipoLuna = 'lune2';}
-		if(luna3.value==true){ prefs.tipoLuna = 'lune3';}
-		
-		prefs.ordineGenerazione = creaArray(list);
-		
-		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
-		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
-		if(finePag.value==true){ prefs.interruzione = 'pagina';}*/
+				if (preset2use[5]=='completi'){
+					giorniCompleti.value = true;
+				}else if(preset2use[5]=='abbreviati'){
+					giorniAbbreviati.value=true;
+				}else if(preset2use[5]=='iniziale'){
+					giorniIniziale.value=true;
+				}
+				
+				
+				if(preset2use[6]=='1'){
+					luna1.value=true;
+				}else if(preset2use[6]=='2'){
+					luna2.value=true;
+				}else if(preset2use[6]=='3'){
+					luna3.value=true;
+				}
+				
+				if(preset2use[7]=='vuoto'){
+					prefisso.text = '';
+				}else{
+					prefisso.text = preset2use[7];
+				}
+				
+				
+				
+				if(preset2use[8]=='paragrafo'){
+					finePar.value = true;
+				}else if(preset2use[8]=='cornice'){
+					fineCorn.value = true;
+				}else if(preset2use[8]=='pagina'){
+					finePag.value = true;
+				}
+				
+				//elenco di generazione
+				var newOrder = preset2use[9].split(sepL);
+				var listLenght = list.items.length;
+				for (it = 0; it < listLenght; it++){list.remove(list.items[0]);}	
+				for(key in newOrder){list.add('item',newOrder[key],list.index);}
+			
 				
 			}
 		
@@ -230,10 +294,10 @@ function mainWindow(){
 			el.text ='';
 		}
 		
-		var optionalValue = riga2.add('listbox',[0, 30, 235, 260],prefs.optionalValue);
+		var optionalValue = riga2.add('listbox',[0, 30, 235, 200],prefs.optionalValue);
 	
 		
-		var add2list = riga2.add('button',[240,120,275,150],'>');
+		var add2list = riga2.add('button',[240,100,275,130],'>');
 		add2list.onClick = function(){
 			list.add('item',optionalValue.selection,list.index);
 		}
@@ -280,6 +344,11 @@ function mainWindow(){
 		return array;
 	}
 	
+	
+		var prefissoPanel = riga2.add('panel',[0,205,235,260],'Il prefisso davanti al nome degli stili');
+		var prefisso = prefissoPanel.add('edittext',[10,10,220,35]);
+	
+	
 		var endPanel = riga2.add('panel',[285,205,600,260],'Scegli il carattere di interruzione');
 			var finePar = endPanel.add('radiobutton',[5,15,90,30],'Paragrafo');
 			var fineCorn = endPanel.add('radiobutton',[100,15,185,30],'Cornice');
@@ -287,11 +356,11 @@ function mainWindow(){
 			finePar.value = true;
 			
 			fineCorn.onClick = function(){
-				alert('Attenzione, l\'interruzione di cornice potrebbe causare la chiusura inaspettata di Indesign.');
+				alert('Attenzione\nL\'interruzione di cornice potrebbe causare la chiusura inaspettata di Indesign.\nRicorda di salvare il tuo file.');
 			}
 			
 			finePag.onClick = function(){
-				alert('Attenzione, l\'interruzione di pagina potrebbe causare la chiusura inaspettata di Indesign.');
+				alert('Attenzione\nL\'interruzione di pagina potrebbe causare la chiusura inaspettata di Indesign.\nRicorda di salvare il tuo file.');
 			}
 	
 			
@@ -343,6 +412,8 @@ function mainWindow(){
 		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
 		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
+		
+		prefs.stylesPrefs.prefissoStili = prefisso.text;
 		
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
@@ -664,10 +735,20 @@ function writeCalendar(calendario,prefs){
 					}
 					
 		        	
-				}else if(ordine[ch] == '[tab]') {
+				}else if(ordine[ch] == '[numero settimana]'){
+					if(thisDay['settimana']){
+						calendarText += '<cs settimana>'+thisDay['settimana']+'</cs settimana>';
+					}
+					
+				}else if(ordine[ch] == '[numero giorno]'){
+					calendarText += '<cs nGiorno>'+thisDay['counter']+'</cs nGiorno>';
+				}
+				
+				
+				else if(ordine[ch] == '[tab]') {
 					calendarText += '\t';
 				}else if(ordine[ch] == '[inter. riga forzata]') {
-					calendarText += '\n';
+					calendarText += '</breakRow>';
 				}else{
 					calendarText += ordine[ch];
 				}
@@ -693,6 +774,13 @@ function writeCalendar(calendario,prefs){
 	
         
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
+	
+	/*
+	******************************
+	* Funzioni grep per applicare gli stili e per aggiungere i caratteri speciali di interruzione
+	******************************
+	*/
+	
     var applyed = applyStyles();
 	
 	if (applyed==true){
@@ -701,6 +789,10 @@ function writeCalendar(calendario,prefs){
 	
 	if (grep1==true){
 		var grep2 = grepSpecialCh('</pgBreak>', '~P');
+	}
+	
+	if (grep2==true){
+		var grep3 = grepSpecialCh('</breakRow>','\n');
 	}
 	
 }
@@ -727,7 +819,10 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParFestivi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				try{
+					stileParFestivi.appliedFont = app.fonts.item('Arial');
+					stileParFestivi.fontStyle = 'Bold';
+				}catch(errore){}
 			}catch(errore){
 				var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -746,8 +841,11 @@ function applyStyles(){
 		
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
-				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name});
+				try{
+					stileParFeriali.appliedFont = app.fonts.item('Arial');
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){}
 			}catch(errore){
 				var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -767,7 +865,12 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParMesi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				
+				try{
+					stileParMesi.appliedFont = app.fonts.item('Arial');
+					stileParMesi.fontStyle = 'Bold';
+				}catch(errore){}
+				
 			}catch(errore){
 				var stileParMesi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -862,14 +965,23 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileCarLune = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{stileCarLune.appliedFont = app.fonts.item(fontLune);}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+				try{
+					stileCarLune.appliedFont = app.fonts.item(fontLune);
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}catch(errore){
 				var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
-				try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+				try{
+					stileCarLune.appliedFont = fontLune;
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}
 		}else{
 			var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
-			try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+			try{
+				stileCarLune.appliedFont = fontLune;
+				stileParFeriali.fontStyle = 'Regular';
+			}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 		}
 		
 		grepStyle('cs',stileCarLune,'luna');
@@ -891,6 +1003,9 @@ function applyStyles(){
 		}else{
 			var stileCarCounter = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarCounter,'nGiorno');
+		
     }
 	
 	
@@ -908,6 +1023,9 @@ function applyStyles(){
 		}else{
 			var stileCarSettimana = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarSettimana,'settimana');
+		
     }
 	
 	return true;
@@ -1071,7 +1189,7 @@ function createPresetsFile(){
 	if(!presetsFilePath.exists){		
 		presetsFilePath.open('w');
 		presetsFilePath.encoding = "UTF-8";
-		presetsFilePath.write(elaboratePreset(defaultPreset)  + smartmixPreset);
+		presetsFilePath.write(elaboratePreset(defaultPreset));
 		presetsFilePath.close();
 	}
 }
