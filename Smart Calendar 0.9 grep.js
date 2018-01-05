@@ -10,7 +10,8 @@ var presetsFilePath = File(getScriptPath()+'/'+utilityFolder+'/'+presetsFile);
 var prefs = {
     'startDay' : [1,'gen'] , //il giorno da cui deve iniziar il calcolo del calendario. Default 1 gennaio
     'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre
-	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]','[fine paragrafo]'],
+	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]'],
+	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[inter. riga forzata]"],
 	'santi' : true,
 	'zeroNum1cifra' : true, //inserisce uno zero davanti ai numeri a una cifra
 	'nomeMese' : 3, // quanto lungo deve essere il nome del mese, se impostato su 0 non viene tagliato
@@ -18,6 +19,7 @@ var prefs = {
 	'scriviNomeMese' : true,
 	'interruzioneCorniceMese' : true,
 	'tipoLuna' : 'lune3',
+	'interruzione' : 'paragrafo', //oppure [interruzione pagina] [interruzione cornice]
 	
     //gli stili da generare paragrafo e carattere	
 	//se crea nuovi stili è false gli stili già essitenti
@@ -78,6 +80,7 @@ var prefs = {
 			}
 		}
 	},
+	
 	'specialChars' : {
 		'fineParagrafo' : '\r',
 		'chBeforeMonth': '', //il carattere che compare prima del mese
@@ -128,6 +131,7 @@ if(calendarFile==true){
 
 function mainWindow(){
 	var oggi = new Date();
+	var myReturn = false;
 	
 	var w = new Window('dialog',nome);
 	
@@ -138,8 +142,7 @@ function mainWindow(){
 			var nomePreset = newPreset.add ('edittext',[132,5,287,32],'New Preset');
 	
 			savePreset.onClick = function(){
-				var currentSettings = new Array();
-				
+				var currentSettings = new Array();				
 			}
 			
 		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
@@ -147,6 +150,33 @@ function mainWindow(){
 			presetsList.onChange = function(){
 				var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
 				//prefs.ordineGenerazione = preset2use[preset2use.length-1].split(sepL);
+				
+				alert(preset2use);
+				
+				/*
+				startMese.value
+				
+				prefs.scriviNomeMese = startMese.value;
+		prefs.interruzioneCorniceMese = pgBreakAfterM.value;
+		prefs.zeroNum1cifra = nZero.value;
+		
+		if(mesiCompleti.value==true){ prefs.nomeMese = 0; }
+		if(mesiAbbreviati.value==true){ prefs.nomeMese = 3;}		
+		
+		if(giorniCompleti.value==true){ prefs.nomeGiorno = 0; }
+		if(giorniAbbreviati.value==true){ prefs.nomeGiorno = 3;}
+		if(giorniIniziale.value==true){ prefs.nomeGiorno = 1;}
+		
+		if(luna1.value==true){ prefs.tipoLuna = 'lune1'; }
+		if(luna2.value==true){ prefs.tipoLuna = 'lune2';}
+		if(luna3.value==true){ prefs.tipoLuna = 'lune3';}
+		
+		prefs.ordineGenerazione = creaArray(list);
+		
+		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
+		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
+		if(finePag.value==true){ prefs.interruzione = 'pagina';}*/
+				
 			}
 		
 	var riga1 = w.add('group',[0,50,600,300]);
@@ -190,7 +220,7 @@ function mainWindow(){
 	
 	
 	
-	var riga2 = w.add('group',[0,250,600,500]);
+	var riga2 = w.add('group',[0,230,600,500]);
 	riga2.orientation = 'row';
 	
 		var el = riga2.add('edittext',[0,0,110,25]);
@@ -200,7 +230,7 @@ function mainWindow(){
 			el.text ='';
 		}
 		
-		var optionalValue = riga2.add('listbox',[0, 30, 235, 250],["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[fine paragrafo]","[inter. riga forzata]","[interruzione pagina]","[interruzione cornice]"]);
+		var optionalValue = riga2.add('listbox',[0, 30, 235, 260],prefs.optionalValue);
 	
 		
 		var add2list = riga2.add('button',[240,120,275,150],'>');
@@ -209,11 +239,11 @@ function mainWindow(){
 		}
 		
 		riga2.add('statictext',[285,0,510,20],'Ordine di generazione');
-		var list = riga2.add('listbox',[285, 30, 510, 250],prefs.ordineGenerazione);
+		var list = riga2.add('listbox',[285, 30, 510, 200],prefs.ordineGenerazione);
 	
 		var su = riga2.add('button',[520,30,600,60],'su');
 		var giu = riga2.add('button',[520,60,600,90],'giu');
-		var rimuovi = riga2.add('button',[520,218,600,250],'rimuovi');
+		var rimuovi = riga2.add('button',[520,168,600,200],'rimuovi');
 	
 		su.onClick = function(){
 			var n = list.selection.index;
@@ -241,6 +271,32 @@ function mainWindow(){
 			y.text = temp;
 		}
 	
+	function creaArray(lista){
+		var array = new Array();
+		for(i=0; i<lista.items.length;i++){
+			//alert(toString(lista.items[i].constructor.name));
+			array[i]=lista.items[i].text;
+		}
+		return array;
+	}
+	
+		var endPanel = riga2.add('panel',[285,205,600,260],'Scegli il carattere di interruzione');
+			var finePar = endPanel.add('radiobutton',[5,15,90,30],'Paragrafo');
+			var fineCorn = endPanel.add('radiobutton',[100,15,185,30],'Cornice');
+			var finePag = endPanel.add('radiobutton',[180,15,280,30],'Pagina');
+			finePar.value = true;
+			
+			fineCorn.onClick = function(){
+				alert('Attenzione, l\'interruzione di cornice potrebbe causare la chiusura inaspettata di Indesign.');
+			}
+			
+			finePag.onClick = function(){
+				alert('Attenzione, l\'interruzione di pagina potrebbe causare la chiusura inaspettata di Indesign.');
+			}
+	
+			
+			
+	
 		
 	
 	
@@ -250,6 +306,11 @@ function mainWindow(){
 		var chiudi = rigaBottoni.add('button',undefined,'chiudi');
 	
 		chiudi.onClick = function(){w.close();}
+		
+		genera.onClick = function(){
+			w.close();
+			myReturn = true;
+		}
 	
 	
 	
@@ -260,6 +321,31 @@ function mainWindow(){
 			
 	w.show();
 	
+	if(myReturn == true){
+		
+		prefs.scriviNomeMese = startMese.value;
+		prefs.interruzioneCorniceMese = pgBreakAfterM.value;
+		prefs.zeroNum1cifra = nZero.value;
+		
+		if(mesiCompleti.value==true){ prefs.nomeMese = 0; }
+		if(mesiAbbreviati.value==true){ prefs.nomeMese = 3;}		
+		
+		if(giorniCompleti.value==true){ prefs.nomeGiorno = 0; }
+		if(giorniAbbreviati.value==true){ prefs.nomeGiorno = 3;}
+		if(giorniIniziale.value==true){ prefs.nomeGiorno = 1;}
+		
+		if(luna1.value==true){ prefs.tipoLuna = 'lune1'; }
+		if(luna2.value==true){ prefs.tipoLuna = 'lune2';}
+		if(luna3.value==true){ prefs.tipoLuna = 'lune3';}
+		
+		prefs.ordineGenerazione = creaArray(list);
+		
+		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
+		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
+		if(finePag.value==true){ prefs.interruzione = 'pagina';}
+		
+		writeCalendar(calGen(anno.text,prefs),prefs);
+	}
 	
 }
 
@@ -523,6 +609,7 @@ function writeCalendar(calendario,prefs){
 	var ordine = prefs.ordineGenerazione;
 	var moons = prefs.stylesPrefs[prefs.tipoLuna];
     var c = 0;
+	var scriviCalendario = true;
 		
 	for (mese in calendario['mesi']){
 		
@@ -545,10 +632,12 @@ function writeCalendar(calendario,prefs){
 		
 		for(giorno in calendario['mesi'][mese]['giorni']) {
 			var thisDay = calendario['mesi'][mese]['giorni'][giorno];
+			calendarText += '<ps festivo'+thisDay.festivo+'>';
 			
-            calendarText += '<ps festivo'+thisDay.festivo+'>';
-			//passo l'ordine di generazione e creo i blocco giorno
 			for(ch in ordine){
+            
+			//passo l'ordine di generazione e creo i blocco giorno
+			
 				
 				if(ordine[ch] == '[giorno]'){
                     calendarText += '<cs giorno>'+thisDay['giorno']+'</cs giorno>';
@@ -575,28 +664,45 @@ function writeCalendar(calendario,prefs){
 					}
 					
 		        	
-				}else {
-					
+				}else if(ordine[ch] == '[tab]') {
+					calendarText += '\t';
+				}else if(ordine[ch] == '[inter. riga forzata]') {
+					calendarText += '\n';
+				}else{
+					calendarText += ordine[ch];
 				}
 				
 			}
 			
 			
 			calendarText += '</ps festivo'+thisDay.festivo+'>';
-			calendarText += '\r';
+			
+			//if()
+			if(prefs.interruzione == 'paragrafo'){
+				calendarText += '\r';
+			}else if (prefs.interruzione == 'cornice'){
+				calendarText += '</frBreak>';
+			}else if (prefs.interruzione == 'pagina'){
+				calendarText += '</pgBreak>';
+			}
+			
             c++;
 			
 		}
 	}
 	
-	
-	
-	
         
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
-    applyStyles();
-	grepSpecialCh('</frBreak>', '~R');
-	grepSpecialCh('</pgBreak>', '~P');
+    var applyed = applyStyles();
+	
+	if (applyed==true){
+		var grep1 = grepSpecialCh('</frBreak>', '~R');
+	}
+	
+	if (grep1==true){
+		var grep2 = grepSpecialCh('</pgBreak>', '~P');
+	}
+	
 }
 
 
@@ -803,6 +909,9 @@ function applyStyles(){
 			var stileCarSettimana = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
     }
+	
+	return true;
+	
 }
 
 
@@ -899,6 +1008,8 @@ function grepStyle(type,stileName,string2find){
 	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
     app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
 	
+	return true;
+	
 }
 
 function grepSpecialCh(ch2find,ch2replace){
@@ -911,12 +1022,15 @@ function grepSpecialCh(ch2find,ch2replace){
     app.findChangeGrepOptions.includeLockedLayersForFind = false;
     app.findChangeGrepOptions.includeLockedStoriesForFind = true;
     app.findChangeGrepOptions.includeMasterPages = true;
-	app.findGrepPreferences.findWhat = ch2find;
-	app.changeGrepPreferences.changeTo = ch2replace;
+	var trovati = app.findGrepPreferences.findWhat = ch2find;
+	var change = app.changeGrepPreferences.changeTo = ch2replace;
+	
 	myDocument.changeGrep();
 	
 	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
     app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+	
+	return true;
 }
 
 
