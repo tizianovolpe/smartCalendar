@@ -577,18 +577,21 @@ function writeCalendar(calendario,prefs){
 				if(ordine[ch] == '[giorno]'){
 					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarGiorno,true);
 		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['giorno'];
+					
 				}else if(ordine[ch] == '[numero]'){
 					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarNumero,true);
 		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['numero'];
+					
 				}else if(ordine[ch] == '[santo]'){
-					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarSanto,true);
+					
 		        	myTextFrame.parentStory.insertionPoints.item(-1).contents=thisDay['santo'];
+					myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarSanto,true);
 				}else if(ordine[ch] == '[luna]'){
 					
 					
 					if(thisDay['luna']!=0){
 						
-						myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarLune,true);
+						
 						
 						if(thisDay['luna'] == 1 ){
 							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[0];
@@ -599,6 +602,9 @@ function writeCalendar(calendario,prefs){
 						}else if(thisDay['luna'] == 4 ){
 							myTextFrame.parentStory.insertionPoints.item(-1).contents=moons[3];
 						}
+						
+						myTextFrame.parentStory.characters.item(-1).applyCharacterStyle(stileCarLune,true);
+						
 					}
 					
 		        	

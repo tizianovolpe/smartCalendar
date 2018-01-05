@@ -345,8 +345,6 @@ function calGen(anno,prefs){
 
 </frBreak>
 
-
-
 ****************************
 */
 
@@ -434,16 +432,22 @@ function writeCalendar(calendario,prefs){
 			
 		}
 	}
+	
+	
+	
+	
         
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
     applyStyles();
-    
+	grepSpecialCh('</frBreak>', '~R');
+	grepSpecialCh('</pgBreak>', '~P');
 }
 
 
 
 function applyStyles(){
      //importo i font attivi
+	var myDocument= app.documents.item(0);
     var fonts = myDocument.fonts;
 	
 	/*
@@ -468,6 +472,9 @@ function applyStyles(){
 		}else{
 			var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('ps',stileParFestivi,'festivotrue');
+		
     }
 	
 	
@@ -485,6 +492,9 @@ function applyStyles(){
 		}else{
 			var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('ps',stileParFeriali,'festivofalse');
+		
     }
 	
 	
@@ -502,6 +512,9 @@ function applyStyles(){
 		}else{
 			var stileParMesi = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('ps',stileParMesi,'month');
+		
     }
 	
 	
@@ -518,6 +531,8 @@ function applyStyles(){
 		}else{
 			var stileCarMesi = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarMesi,'month');
     }
 	
 	//stile carattere numero
@@ -533,6 +548,9 @@ function applyStyles(){
 		}else{
 			var stileCarNumero = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarNumero,'numero');
+		
     }
 	
 	
@@ -549,6 +567,9 @@ function applyStyles(){
 		}else{
 			var stileCarGiorno = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarGiorno,'giorno');
+		
     }
 	
 	
@@ -565,6 +586,8 @@ function applyStyles(){
 		}else{
 			var stileCarSanto = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarSanto,'santo');
     }
 	
 	
@@ -586,6 +609,9 @@ function applyStyles(){
 			var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 			try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 		}
+		
+		grepStyle('cs',stileCarLune,'luna');
+		
     }
 	
 	
@@ -688,6 +714,54 @@ function cut(string,num){
 	}
 }
 
+
+function grepStyle(type,stileName,string2find){
+	
+	//type ps o cs
+	
+	myDocument= app.documents.item(0);
+	
+	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
+    app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+	app.findChangeGrepOptions.includeFootnotes = true;
+    app.findChangeGrepOptions.includeHiddenLayers = false;
+    app.findChangeGrepOptions.includeLockedLayersForFind = false;
+    app.findChangeGrepOptions.includeLockedStoriesForFind = true;
+    app.findChangeGrepOptions.includeMasterPages = true;
+	
+	if(type=='ps'){
+		app.findGrepPreferences.findWhat = '(<ps '+string2find+'>)(.+?)(</ps '+string2find+'>)';
+		app.changeGrepPreferences.appliedParagraphStyle = stileName;
+	}else if(type=='cs'){
+		app.findGrepPreferences.findWhat = '(<cs '+string2find+'>)(.+?)(</cs '+string2find+'>)';
+		app.changeGrepPreferences.appliedCharacterStyle = stileName;
+	}
+	
+	app.changeGrepPreferences.changeTo = '$2';
+	myDocument.changeGrep();
+	
+	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
+    app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+	
+}
+
+function grepSpecialCh(ch2find,ch2replace){
+	myDocument= app.documents.item(0);
+	
+	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
+    app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+	app.findChangeGrepOptions.includeFootnotes = true;
+    app.findChangeGrepOptions.includeHiddenLayers = false;
+    app.findChangeGrepOptions.includeLockedLayersForFind = false;
+    app.findChangeGrepOptions.includeLockedStoriesForFind = true;
+    app.findChangeGrepOptions.includeMasterPages = true;
+	app.findGrepPreferences.findWhat = ch2find;
+	app.changeGrepPreferences.changeTo = ch2replace;
+	myDocument.changeGrep();
+	
+	app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
+    app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+}
 
 
 //get the current script folder path
