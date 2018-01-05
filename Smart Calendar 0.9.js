@@ -11,7 +11,7 @@ var prefs = {
     'startDay' : [1,'gen'] , //il giorno da cui deve iniziar il calcolo del calendario. Default 1 gennaio
     'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre
 	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]'],
-	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[inter. riga forzata]"],
+	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[numero giorno]","[numero settimana]","[inter. riga forzata]"],
 	'santi' : true,
 	'zeroNum1cifra' : true, //inserisce uno zero davanti ai numeri a una cifra
 	'nomeMese' : 3, // quanto lungo deve essere il nome del mese, se impostato su 0 non viene tagliato
@@ -34,49 +34,49 @@ var prefs = {
 		'styles' : {
 			'stileParFestivi' : {
 				'active' : true,
-				'name' : 'festivi',
+				'name' : 'Festivi',
 			},
 			'stileParFeriali' : {
 				'active' : true,
-				'name' : 'feriali',
+				'name' : 'Feriali',
 			},
 			'stileParMesi' : {
 				'active' : true,
-				'name' : 'mesi',
+				'name' : 'Mesi',
 			},
 			'stileCarMesi' : {
 				'active' : true,
-				'name' : 'mesi',
+				'name' : 'Mesi',
 			},
 			'stileCarNumero' : {
 				'active' : true,
-				'name' : 'numero',
+				'name' : 'Numero',
 			},
 			
 			'stileCarGiorno' : {
 				'active' : true,
-				'name' : 'giorno',
+				'name' : 'Giorno',
 			},
 			
 			'stileCarSanto' : {
 				'active' : true,
-				'name' : 'santo',
+				'name' : 'Santo',
 			},
 			
 			'stileCarLune' : {
 				'active' : true,
-				'name' : 'lune',
+				'name' : 'Lune',
 				'type' : 'lune3',
 			},
 			
 			'stileCarCounter' : {
 				'active' : true,
-				'name' : 'counter',
+				'name' : 'Numero giorno',
 			},
 			
 			'stileCarSettimana' : {
 				'active' : true,
-				'name' : 'settimana',
+				'name' : 'Numero settimana',
 			}
 		}
 	},
@@ -230,10 +230,10 @@ function mainWindow(){
 			el.text ='';
 		}
 		
-		var optionalValue = riga2.add('listbox',[0, 30, 235, 260],prefs.optionalValue);
+		var optionalValue = riga2.add('listbox',[0, 30, 235, 200],prefs.optionalValue);
 	
 		
-		var add2list = riga2.add('button',[240,120,275,150],'>');
+		var add2list = riga2.add('button',[240,100,275,130],'>');
 		add2list.onClick = function(){
 			list.add('item',optionalValue.selection,list.index);
 		}
@@ -279,6 +279,11 @@ function mainWindow(){
 		}
 		return array;
 	}
+	
+	
+		var prefissoPanel = riga2.add('panel',[0,205,235,260],'Il prefisso davanti al nome degli stili');
+		var prefisso = prefissoPanel.add('edittext',[10,10,220,35]);
+	
 	
 		var endPanel = riga2.add('panel',[285,205,600,260],'Scegli il carattere di interruzione');
 			var finePar = endPanel.add('radiobutton',[5,15,90,30],'Paragrafo');
@@ -343,6 +348,8 @@ function mainWindow(){
 		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
 		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
+		
+		prefs.stylesPrefs.prefissoStili = prefisso.text;
 		
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
@@ -664,10 +671,20 @@ function writeCalendar(calendario,prefs){
 					}
 					
 		        	
-				}else if(ordine[ch] == '[tab]') {
+				}else if(ordine[ch] == '[numero settimana]'){
+					if(thisDay['settimana']){
+						calendarText += '<cs settimana>'+thisDay['settimana']+'</cs settimana>';
+					}
+					
+				}else if(ordine[ch] == '[numero giorno]'){
+					calendarText += '<cs nGiorno>'+thisDay['counter']+'</cs nGiorno>';
+				}
+				
+				
+				else if(ordine[ch] == '[tab]') {
 					calendarText += '\t';
 				}else if(ordine[ch] == '[inter. riga forzata]') {
-					calendarText += '\n';
+					calendarText += '</breakRow>';
 				}else{
 					calendarText += ordine[ch];
 				}
@@ -693,6 +710,13 @@ function writeCalendar(calendario,prefs){
 	
         
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
+	
+	/*
+	******************************
+	* Funzioni grep per applicare gli stili e per aggiungere i caratteri speciali di interruzione
+	******************************
+	*/
+	
     var applyed = applyStyles();
 	
 	if (applyed==true){
@@ -701,6 +725,10 @@ function writeCalendar(calendario,prefs){
 	
 	if (grep1==true){
 		var grep2 = grepSpecialCh('</pgBreak>', '~P');
+	}
+	
+	if (grep2==true){
+		var grep3 = grepSpecialCh('</breakRow>','\n');
 	}
 	
 }
@@ -727,7 +755,10 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParFestivi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				try{
+					stileParFestivi.appliedFont = app.fonts.item('Arial');
+					stileParFestivi.fontStyle = 'Bold';
+				}catch(errore){}
 			}catch(errore){
 				var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -746,8 +777,11 @@ function applyStyles(){
 		
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
-				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name});
+				try{
+					stileParFeriali.appliedFont = app.fonts.item('Arial');
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){}
 			}catch(errore){
 				var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -767,7 +801,12 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParMesi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{festiviStyle.appliedFont = app.fonts.item('Arial Black');}catch(errore){}
+				
+				try{
+					stileParMesi.appliedFont = app.fonts.item('Arial');
+					stileParMesi.fontStyle = 'Bold';
+				}catch(errore){}
+				
 			}catch(errore){
 				var stileParMesi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -862,14 +901,23 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileCarLune = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{stileCarLune.appliedFont = app.fonts.item(fontLune);}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+				try{
+					stileCarLune.appliedFont = app.fonts.item(fontLune);
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}catch(errore){
 				var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
-				try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+				try{
+					stileCarLune.appliedFont = fontLune;
+					stileParFeriali.fontStyle = 'Regular';
+				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}
 		}else{
 			var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
-			try{stileCarLune.appliedFont = fontLune;}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
+			try{
+				stileCarLune.appliedFont = fontLune;
+				stileParFeriali.fontStyle = 'Regular';
+			}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 		}
 		
 		grepStyle('cs',stileCarLune,'luna');
@@ -891,6 +939,9 @@ function applyStyles(){
 		}else{
 			var stileCarCounter = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarCounter,'nGiorno');
+		
     }
 	
 	
@@ -908,6 +959,9 @@ function applyStyles(){
 		}else{
 			var stileCarSettimana = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 		}
+		
+		grepStyle('cs',stileCarSettimana,'settimana');
+		
     }
 	
 	return true;
