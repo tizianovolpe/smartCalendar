@@ -112,7 +112,7 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
-var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]'];
+var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo'];
 
 /*var smartmixPreset = '\
 tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
@@ -188,9 +188,15 @@ function mainWindow(){
 				if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
 				if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
 				if(finePag.value==true){ currentSettings[8] = 'pagina';}
+                
+                
 				
 				var currentGenerationList = String(list.items).split(',');
 				currentSettings[9] = currentGenerationList.join(sepL);
+                
+                if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
+                if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
+                if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
 				
 				addPreset(currentSettings);
 				alert('Il nuovo predefinito è stato salvato.');
@@ -256,8 +262,15 @@ function mainWindow(){
 				var listLenght = list.items.length;
 				for (it = 0; it < listLenght; it++){list.remove(list.items[0]);}	
 				for(key in newOrder){list.add('item',newOrder[key],list.index);}
+                
+                
+                
+                if(preset2use[10]=='paragrafo'){chAfterMonth.selection = 0; }
+                if(preset2use[10]=='cornice'){chAfterMonth.selection = 1; }
+                if(preset2use[10]=='pagina'){chAfterMonth.selection = 2; }
+                
+                
 			
-				
 			}
     
     
@@ -271,12 +284,12 @@ function mainWindow(){
         
 		
 	var riga1 = w.add('group',[0,50,600,300]);
-		var scriptInfo = riga1.add('panel',[0,6,295,110]);
-			scriptInfo.add('statictext',[10,10,295,30],'Progettato da smartmix.it');
-			scriptInfo.add('statictext',[10,10,295,60],'Ver. beta - segnala errori a info@smartmix.it');
-			scriptInfo.add('statictext',[10,50,295,90],'Attenzione: Esegui un attento controllo del calendario generato prima di distribuirlo',{multiline: true});
+		var scriptInfo = riga1.add('panel',[0,6,295,70]);
+			scriptInfo.add('statictext',[10,0,295,25],'Progettato da smartmix.it - versione Beta');
+			//scriptInfo.add('statictext',[10,10,295,60],'Ver. beta - segnala errori a info@smartmix.it');
+			scriptInfo.add('statictext',[10,25,295,60],'Attenzione: Esegui un attento controllo del calendario generato prima di distribuirlo',{multiline: true});
 	
-		var baseSettingsPanel = riga1.add('panel',[0,120,295,240],'Informazioni di base');
+		var baseSettingsPanel = riga1.add('panel',[0,75,295,240],'Informazioni di base');
 			baseSettingsPanel.add('statictext',[10,10,50,30],'Anno');
 			var anno = baseSettingsPanel.add('edittext',[42,10,110,30],oggi.getFullYear()+1);
 	
@@ -288,6 +301,10 @@ function mainWindow(){
 			
 			var nZero = baseSettingsPanel.add('checkbox',[10,80,295,100],'Zero davanti ai numeri ad una cifra');
 			nZero.value = true;
+            
+            baseSettingsPanel.add('statictext',[10,100,150,120],'Dopo il nome del mese:');
+            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,100,270,120],['Fine paragrafo','Interr. Cornice','Interr. Pagina']);
+            chAfterMonth.selection = 0;
 	
 	
 		var customSettingsPanel = riga1.add('panel',[305,6,600,240]);
@@ -390,12 +407,6 @@ function mainWindow(){
 				alert('Attenzione\nL\'interruzione di pagina potrebbe causare la chiusura inaspettata di Indesign.\nRicorda di salvare il tuo file.');
 			}
 	
-			
-			
-	
-		
-	
-	
 	
 	var rigaBottoni = w.add('group');
 		var genera = rigaBottoni.add('button',undefined,'genera',{name:'ok'});
@@ -413,7 +424,12 @@ function mainWindow(){
         try{
                 var myDocument= app.documents.item(0);	
                 var myPage = myDocument.pages.item(0);
-                changePreset(elaboratePreset(myPage.label));
+                if(myPage.label.toString()==''){
+                    //
+                }else{
+                    changePreset(elaboratePreset(myPage.label));
+                }
+                
             
             }catch(a){
                 //alert(e);
@@ -446,7 +462,11 @@ function mainWindow(){
 		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
 		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
-		
+        
+        if(chAfterMonth.selection.index==0){prefs.specialChars.chAfterMonth='\n'}
+        if(chAfterMonth.selection.index==1){prefs.specialChars.chAfterMonth='</frBreak>'}
+        if(chAfterMonth.selection.index==2){prefs.specialChars.chAfterMonth='</pgBreak>'}
+        
 		prefs.stylesPrefs.prefissoStili = prefisso.text;
         
         
@@ -475,19 +495,21 @@ function mainWindow(){
             currentSettings[7]=prefisso.text;
         }
 
-
         if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
         if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
         if(finePag.value==true){ currentSettings[8] = 'pagina';}
+        
+        
 
         var currentGenerationList = String(list.items).split(',');
         currentSettings[9] = currentGenerationList.join(sepL);
+        
+        if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
+        if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
+        if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
+        
         prefs.generationSettings = elaboratePreset(currentSettings);
         
-        
-        
-        
-		
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
 	
@@ -759,10 +781,6 @@ function writeCalendar(calendario,prefs){
 		
 	for (mese in calendario['mesi']){
 		
-		if(prefs.interruzioneCorniceMese == true & c!=0){
-			calendarText += '</frBreak>';
-		}
-		
 		if(prefs.scriviNomeMese == true){
 			
             calendarText += '<ps month>';
@@ -771,7 +789,7 @@ function writeCalendar(calendario,prefs){
 			calendarText += calendario['mesi'][mese]['nome'];
             calendarText += '</cs month>';
             calendarText += '</ps month>';
-			calendarText += '\r';
+			calendarText += prefs.specialChars.chAfterMonth;
 			
 		}
 		
@@ -841,10 +859,16 @@ function writeCalendar(calendario,prefs){
 			}else if (prefs.interruzione == 'pagina'){
 				calendarText += '</pgBreak>';
 			}
+            
 			
             c++;
 			
 		}
+        
+        if(prefs.interruzioneCorniceMese == true & c!=0){
+			calendarText += '</frBreak>';
+		}
+        
 	}
 	
         
@@ -859,20 +883,20 @@ function writeCalendar(calendario,prefs){
 	*/
 	
     
-	
-	
+    
+    
     var grep1 = grepSpecialCh('</frBreak>', '~R');
-	
-	if (grep1==true){
-		var grep2 = grepSpecialCh('</pgBreak>', '~P');
-	}
-	
-	if (grep2==true){
-		var grep3 = grepSpecialCh('</breakRow>','\n');
-	}
+    
+    if(grep1==true){
+        var grep2 = grepSpecialCh('</pgBreak>', '~P');
+    }
     
     if(grep2==true){
-        applyStyles();
+        var appStyles = applyStyles();
+    }
+    
+    if(appStyles == true){
+        grepSpecialCh('</breakRow>','\n');
     }
 	
 }
