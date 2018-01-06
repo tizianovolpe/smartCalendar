@@ -1,3 +1,19 @@
+/**
+ *
+ * @name Smart Calendar
+ * @desc Indesign script to create a calendar with italian festivity, saint, moons and Catholic mobile days
+ * @version 1.0 beta
+ *
+ * @author Smart Mix smartmix.it
+ * @link https://smartmix.it
+ * 
+ * 
+ * @see https://smartmix.it/grafica-design/smart-calendar-indesign/
+ 
+ 
+ */
+
+
 var nome = "Smart Calendar";
 var versione = "1.0 Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
@@ -399,8 +415,6 @@ function mainWindow(){
                 var myPage = myDocument.pages.item(0);
                 changePreset(elaboratePreset(myPage.label));
             
-                //alert('In questo docomento era già stato generato un calendario, vengono utilizzate le impstazioni di generazione precentendi');
-            
             }catch(a){
                 //alert(e);
             }
@@ -725,10 +739,6 @@ function writeCalendar(calendario,prefs){
     var myDocument= app.documents.item(0);	
     var myPage = myDocument.pages.item(0);
     var calendarText = '';
-    
-    var saveSettings = myPage.textFrames.add();
-    saveSettings.geometricBounds = [-20,0,-15,150];
-    saveSettings.parentStory.insertionPoints.item(-1).contents = 'Non cancellare, in questo box sono salvate le impostazioni del calendario generato';
     
     //verifico se esiste già un box di testo selezionat
     //se esiste scrivo il calendario dentro alla selezione
@@ -1288,81 +1298,3 @@ function elaboratePreset(inputString){
 		return inputString.join(sep);
 	}
 }
-
-
-
-/*
-***************************
-* Funzione per controllare se un calendario è già stato generato e se restituisce le imposazioni di generazione precedenti.
-* le impostazioni sono salvate in un textFrame esterno al alla pagina del documento
-***************************
-*/
-
-/*
-function getGenerationSettings(){
-    
-    var myDocument= app.documents.item(0);
-    
-    
-    do
-    {
-      if (app.documents.length == 0)
-      {
-        break;
-      }
-
-      var document = app.activeDocument;
-      if (! (document instanceof Document))
-      {
-        break;
-      }
-
-      var currentItem = null;
-      if (app.selection.length > 0)
-      {
-        currentItem = app.selection[0];
-      }
-
-      var undoneItems = [];
-      for (var idx = 0; idx < document.allPageItems.length; idx++)
-      {
-        var pageItem = document.allPageItems[idx];
-        if (pageItem.label == "TODO")
-        {
-          undoneItems.push(pageItem);
-        }
-      }
-      if (undoneItems.length <= 0)
-      {
-        break;
-      }
-
-      var nextItemIdx = 0;
-
-      if (currentItem != null)
-      {
-        var currentItemIdx = -1;
-        var searchItemIdx = 0;
-        while (currentItemIdx == -1 && searchItemIdx < undoneItems.length)
-        {
-           if (undoneItems[searchItemIdx] == currentItem)
-           {
-             currentItemIdx = searchItemIdx;
-           }
-           searchItemIdx++;
-        }
-        if (currentItemIdx >= 0)
-        {
-          nextItemIdx = currentItemIdx + 1;
-          if (nextItemIdx >= undoneItems.length)
-          {
-            nextItemIdx = 0;
-          }
-        }
-      }
-
-      app.select(undoneItems[nextItemIdx]);
-    }
-    while (false);
-}
-*/
