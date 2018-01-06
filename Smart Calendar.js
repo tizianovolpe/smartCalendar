@@ -1,6 +1,6 @@
 var nome = "Smart Calendar";
 var versione = "1.0 Beta";
-var scriptLink = '#';
+var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
 var presetsFile = 'presets.txt';
@@ -306,7 +306,7 @@ function mainWindow(){
 		var list = riga2.add('listbox',[285, 30, 510, 200],prefs.ordineGenerazione);
 	
 		var su = riga2.add('button',[520,30,600,60],'su');
-		var giu = riga2.add('button',[520,60,600,90],'giu');
+		var giu = riga2.add('button',[520,60,600,90],'giù');
 		var rimuovi = riga2.add('button',[520,168,600,200],'rimuovi');
 	
 		su.onClick = function(){
