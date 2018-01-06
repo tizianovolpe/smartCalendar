@@ -1,1 +1,1 @@
-Default Preset|||true|||true|||true|||completi|||completi|||1|||vuoto|||paragrafo|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]
+Default Preset|||true|||true|||true|||completi|||completi|||1|||vuoto|||paragrafo|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]New Preset|||true|||true|||true|||abbreviati|||iniziale|||2|||vuoto|||paragrafo|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]

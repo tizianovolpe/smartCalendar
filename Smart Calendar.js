@@ -134,6 +134,8 @@ function mainWindow(){
 	var myReturn = false;
 	
 	var w = new Window('dialog',nome+' '+versione);
+    
+    
 	
 	var presetPanel = w.add('panel',[0,0,600,50],'Preset');
 		presetPanel.orientation = 'row';
@@ -181,12 +183,11 @@ function mainWindow(){
 				
 				
 			}
-			
-		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
-			var presetsList = presetPanel.add('dropdownlist',[125,10,270,30],getPresetsName());
-			presetsList.onChange = function(){
-				var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
-								
+    
+    
+            function changePreset (preset2use){
+				//var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
+                //alert(preset2use[1]);
 				for (k in preset2use){
 					if(preset2use[k] == 'true'){
 						preset2use[k] = true;
@@ -218,7 +219,7 @@ function mainWindow(){
 					luna3.value=true;
 				}
 				
-				if(preset2use[7]=='vuoto'){
+				if(preset2use[7]=='vuoto' || preset2use[7]==undefined ){
 					prefisso.text = '';
 				}else{
 					prefisso.text = preset2use[7];
@@ -242,6 +243,16 @@ function mainWindow(){
 			
 				
 			}
+    
+    
+			
+		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
+			var presetsList = presetPanel.add('dropdownlist',[125,10,270,30],getPresetsName());
+            presetsList.onChange = function(){
+                changePreset(elaboratePreset(readPresets()[presetsList.selection.index]));
+            }
+            
+        
 		
 	var riga1 = w.add('group',[0,50,600,300]);
 		var scriptInfo = riga1.add('panel',[0,6,295,110]);
@@ -382,8 +393,17 @@ function mainWindow(){
 		}
 	
 	
-	
-	//var gPub = w.add('group');
+        //verifico se è è già stato applicato una label alla prima pagina e se c'è utilizzo le informazioni presenti per le impostazioni di generazione    
+        try{
+                var myDocument= app.documents.item(0);	
+                var myPage = myDocument.pages.item(0);
+                changePreset(elaboratePreset(myPage.label));
+            
+                //alert('In questo docomento era già stato generato un calendario, vengono utilizzate le impstazioni di generazione precentendi');
+            
+            }catch(a){
+                //alert(e);
+            }
 			
 			
 			
@@ -414,6 +434,45 @@ function mainWindow(){
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
 		
 		prefs.stylesPrefs.prefissoStili = prefisso.text;
+        
+        
+        
+        //le impostazioni da salvare nel label del text frame del documento
+        var currentSettings = new Array();
+        currentSettings[0] = 'smartCalendarSettings';
+        currentSettings[1] = startMese.value;
+        currentSettings[2] = pgBreakAfterM.value;
+        currentSettings[3] = nZero.value;
+
+        if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
+        if(mesiAbbreviati.value==true){ currentSettings[4] = 'abbreviati';}		
+
+        if(giorniCompleti.value==true){ currentSettings[5] = 'completi'; }
+        if(giorniAbbreviati.value==true){ currentSettings[5] = 'abbreviati';}
+        if(giorniIniziale.value==true){ currentSettings[5] = 'iniziale';}
+
+        if(luna1.value==true){ currentSettings[6] = 1; }
+        if(luna2.value==true){ currentSettings[6] = 2;}
+        if(luna3.value==true){ currentSettings[6] = 3;}
+
+        if(prefisso.text==''){
+            currentSettings[7]='vuoto';
+        }else{
+            currentSettings[7]=prefisso.text;
+        }
+
+
+        if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
+        if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
+        if(finePag.value==true){ currentSettings[8] = 'pagina';}
+
+        var currentGenerationList = String(list.items).split(',');
+        currentSettings[9] = currentGenerationList.join(sepL);
+        prefs.generationSettings = elaboratePreset(currentSettings);
+        
+        
+        
+        
 		
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
@@ -667,14 +726,20 @@ function writeCalendar(calendario,prefs){
     var myPage = myDocument.pages.item(0);
     var calendarText = '';
     
+    var saveSettings = myPage.textFrames.add();
+    saveSettings.geometricBounds = [-20,0,-15,150];
+    saveSettings.parentStory.insertionPoints.item(-1).contents = 'Non cancellare, in questo box sono salvate le impostazioni del calendario generato';
+    
     //verifico se esiste già un box di testo selezionat
     //se esiste scrivo il calendario dentro alla selezione
     //se non esiste genero una casella di testo nella prima pagina del documento: dimensioni A4 CON CORNICE DI 10 mm
     if(app.selection.length==1){
 		var myTextFrame = app.selection[0].insertionPoints[0];
+        //var frameLabel = app.selection[0].label;
 	}else{ 
 	    var myTextFrame = myPage.textFrames.add();
 		myTextFrame.geometricBounds = [10, 10, 287 , 200];
+        //var frameLabel = myTextFrame.label;
 	}
 	
 	var ordine = prefs.ordineGenerazione;
@@ -773,7 +838,9 @@ function writeCalendar(calendario,prefs){
 	}
 	
         
-    myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
+    myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;    
+    //saveSettings.label= prefs.generationSettings;
+    myPage.label = prefs.generationSettings;
 	
 	/*
 	******************************
@@ -781,11 +848,10 @@ function writeCalendar(calendario,prefs){
 	******************************
 	*/
 	
-    var applyed = applyStyles();
+    
 	
-	if (applyed==true){
-		var grep1 = grepSpecialCh('</frBreak>', '~R');
-	}
+	
+    var grep1 = grepSpecialCh('</frBreak>', '~R');
 	
 	if (grep1==true){
 		var grep2 = grepSpecialCh('</pgBreak>', '~P');
@@ -794,6 +860,10 @@ function writeCalendar(calendario,prefs){
 	if (grep2==true){
 		var grep3 = grepSpecialCh('</breakRow>','\n');
 	}
+    
+    if(grep2==true){
+        applyStyles();
+    }
 	
 }
 
@@ -1221,3 +1291,78 @@ function elaboratePreset(inputString){
 
 
 
+/*
+***************************
+* Funzione per controllare se un calendario è già stato generato e se restituisce le imposazioni di generazione precedenti.
+* le impostazioni sono salvate in un textFrame esterno al alla pagina del documento
+***************************
+*/
+
+/*
+function getGenerationSettings(){
+    
+    var myDocument= app.documents.item(0);
+    
+    
+    do
+    {
+      if (app.documents.length == 0)
+      {
+        break;
+      }
+
+      var document = app.activeDocument;
+      if (! (document instanceof Document))
+      {
+        break;
+      }
+
+      var currentItem = null;
+      if (app.selection.length > 0)
+      {
+        currentItem = app.selection[0];
+      }
+
+      var undoneItems = [];
+      for (var idx = 0; idx < document.allPageItems.length; idx++)
+      {
+        var pageItem = document.allPageItems[idx];
+        if (pageItem.label == "TODO")
+        {
+          undoneItems.push(pageItem);
+        }
+      }
+      if (undoneItems.length <= 0)
+      {
+        break;
+      }
+
+      var nextItemIdx = 0;
+
+      if (currentItem != null)
+      {
+        var currentItemIdx = -1;
+        var searchItemIdx = 0;
+        while (currentItemIdx == -1 && searchItemIdx < undoneItems.length)
+        {
+           if (undoneItems[searchItemIdx] == currentItem)
+           {
+             currentItemIdx = searchItemIdx;
+           }
+           searchItemIdx++;
+        }
+        if (currentItemIdx >= 0)
+        {
+          nextItemIdx = currentItemIdx + 1;
+          if (nextItemIdx >= undoneItems.length)
+          {
+            nextItemIdx = 0;
+          }
+        }
+      }
+
+      app.select(undoneItems[nextItemIdx]);
+    }
+    while (false);
+}
+*/
