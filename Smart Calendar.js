@@ -1,3 +1,19 @@
+/**
+ *
+ * @name Smart Calendar
+ * @desc Indesign script to create a calendar with italian festivity, saint, moons and Catholic mobile days
+ * @version 1.0 beta
+ *
+ * @author Smart Mix smartmix.it
+ * @link https://smartmix.it
+ * 
+ * 
+ * @see https://smartmix.it/grafica-design/smart-calendar-indesign/
+ 
+ 
+ */
+
+
 var nome = "Smart Calendar";
 var versione = "1.0 Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
@@ -96,7 +112,7 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
-var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]'];
+var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo'];
 
 /*var smartmixPreset = '\
 tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
@@ -134,6 +150,8 @@ function mainWindow(){
 	var myReturn = false;
 	
 	var w = new Window('dialog',nome+' '+versione);
+    
+    
 	
 	var presetPanel = w.add('panel',[0,0,600,50],'Preset');
 		presetPanel.orientation = 'row';
@@ -170,9 +188,15 @@ function mainWindow(){
 				if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
 				if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
 				if(finePag.value==true){ currentSettings[8] = 'pagina';}
+                
+                
 				
 				var currentGenerationList = String(list.items).split(',');
 				currentSettings[9] = currentGenerationList.join(sepL);
+                
+                if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
+                if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
+                if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
 				
 				addPreset(currentSettings);
 				alert('Il nuovo predefinito è stato salvato.');
@@ -181,12 +205,11 @@ function mainWindow(){
 				
 				
 			}
-			
-		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
-			var presetsList = presetPanel.add('dropdownlist',[125,10,270,30],getPresetsName());
-			presetsList.onChange = function(){
-				var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
-								
+    
+    
+            function changePreset (preset2use){
+				//var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
+                //alert(preset2use[1]);
 				for (k in preset2use){
 					if(preset2use[k] == 'true'){
 						preset2use[k] = true;
@@ -218,7 +241,7 @@ function mainWindow(){
 					luna3.value=true;
 				}
 				
-				if(preset2use[7]=='vuoto'){
+				if(preset2use[7]=='vuoto' || preset2use[7]==undefined ){
 					prefisso.text = '';
 				}else{
 					prefisso.text = preset2use[7];
@@ -239,17 +262,34 @@ function mainWindow(){
 				var listLenght = list.items.length;
 				for (it = 0; it < listLenght; it++){list.remove(list.items[0]);}	
 				for(key in newOrder){list.add('item',newOrder[key],list.index);}
+                
+                
+                
+                if(preset2use[10]=='paragrafo'){chAfterMonth.selection = 0; }
+                if(preset2use[10]=='cornice'){chAfterMonth.selection = 1; }
+                if(preset2use[10]=='pagina'){chAfterMonth.selection = 2; }
+                
+                
 			
-				
 			}
+    
+    
+			
+		presetPanel.add('statictext',[10,10,150,30],'Scegli il predefinito');
+			var presetsList = presetPanel.add('dropdownlist',[125,10,270,30],getPresetsName());
+            presetsList.onChange = function(){
+                changePreset(elaboratePreset(readPresets()[presetsList.selection.index]));
+            }
+            
+        
 		
 	var riga1 = w.add('group',[0,50,600,300]);
-		var scriptInfo = riga1.add('panel',[0,6,295,110]);
-			scriptInfo.add('statictext',[10,10,295,30],'Progettato da smartmix.it');
-			scriptInfo.add('statictext',[10,10,295,60],'Ver. beta - segnala errori a info@smartmix.it');
-			scriptInfo.add('statictext',[10,50,295,90],'Attenzione: Esegui un attento controllo del calendario generato prima di distribuirlo',{multiline: true});
+		var scriptInfo = riga1.add('panel',[0,6,295,70]);
+			scriptInfo.add('statictext',[10,0,295,25],'Progettato da smartmix.it - versione Beta');
+			//scriptInfo.add('statictext',[10,10,295,60],'Ver. beta - segnala errori a info@smartmix.it');
+			scriptInfo.add('statictext',[10,25,295,60],'Attenzione: Esegui un attento controllo del calendario generato prima di distribuirlo',{multiline: true});
 	
-		var baseSettingsPanel = riga1.add('panel',[0,120,295,240],'Informazioni di base');
+		var baseSettingsPanel = riga1.add('panel',[0,75,295,240],'Informazioni di base');
 			baseSettingsPanel.add('statictext',[10,10,50,30],'Anno');
 			var anno = baseSettingsPanel.add('edittext',[42,10,110,30],oggi.getFullYear()+1);
 	
@@ -261,6 +301,10 @@ function mainWindow(){
 			
 			var nZero = baseSettingsPanel.add('checkbox',[10,80,295,100],'Zero davanti ai numeri ad una cifra');
 			nZero.value = true;
+            
+            baseSettingsPanel.add('statictext',[10,100,150,120],'Dopo il nome del mese:');
+            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,100,270,120],['Fine paragrafo','Interr. Cornice','Interr. Pagina']);
+            chAfterMonth.selection = 0;
 	
 	
 		var customSettingsPanel = riga1.add('panel',[305,6,600,240]);
@@ -363,12 +407,6 @@ function mainWindow(){
 				alert('Attenzione\nL\'interruzione di pagina potrebbe causare la chiusura inaspettata di Indesign.\nRicorda di salvare il tuo file.');
 			}
 	
-			
-			
-	
-		
-	
-	
 	
 	var rigaBottoni = w.add('group');
 		var genera = rigaBottoni.add('button',undefined,'genera',{name:'ok'});
@@ -382,8 +420,20 @@ function mainWindow(){
 		}
 	
 	
-	
-	//var gPub = w.add('group');
+        //verifico se è è già stato applicato una label alla prima pagina e se c'è utilizzo le informazioni presenti per le impostazioni di generazione    
+        try{
+                var myDocument= app.documents.item(0);	
+                var myPage = myDocument.pages.item(0);
+                if(myPage.label.toString()==''){
+                    //
+                }else{
+                    changePreset(elaboratePreset(myPage.label));
+                }
+                
+            
+            }catch(a){
+                //alert(e);
+            }
 			
 			
 			
@@ -412,9 +462,54 @@ function mainWindow(){
 		if(finePar.value==true){ prefs.interruzione = 'paragrafo'; }
 		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
-		
+        
+        if(chAfterMonth.selection.index==0){prefs.specialChars.chAfterMonth='\n'}
+        if(chAfterMonth.selection.index==1){prefs.specialChars.chAfterMonth='</frBreak>'}
+        if(chAfterMonth.selection.index==2){prefs.specialChars.chAfterMonth='</pgBreak>'}
+        
 		prefs.stylesPrefs.prefissoStili = prefisso.text;
-		
+        
+        
+        
+        //le impostazioni da salvare nel label del text frame del documento
+        var currentSettings = new Array();
+        currentSettings[0] = 'smartCalendarSettings';
+        currentSettings[1] = startMese.value;
+        currentSettings[2] = pgBreakAfterM.value;
+        currentSettings[3] = nZero.value;
+
+        if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
+        if(mesiAbbreviati.value==true){ currentSettings[4] = 'abbreviati';}		
+
+        if(giorniCompleti.value==true){ currentSettings[5] = 'completi'; }
+        if(giorniAbbreviati.value==true){ currentSettings[5] = 'abbreviati';}
+        if(giorniIniziale.value==true){ currentSettings[5] = 'iniziale';}
+
+        if(luna1.value==true){ currentSettings[6] = 1; }
+        if(luna2.value==true){ currentSettings[6] = 2;}
+        if(luna3.value==true){ currentSettings[6] = 3;}
+
+        if(prefisso.text==''){
+            currentSettings[7]='vuoto';
+        }else{
+            currentSettings[7]=prefisso.text;
+        }
+
+        if(finePar.value==true){ currentSettings[8] = 'paragrafo'; }
+        if(fineCorn.value==true){ currentSettings[8] = 'cornice';}
+        if(finePag.value==true){ currentSettings[8] = 'pagina';}
+        
+        
+
+        var currentGenerationList = String(list.items).split(',');
+        currentSettings[9] = currentGenerationList.join(sepL);
+        
+        if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
+        if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
+        if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
+        
+        prefs.generationSettings = elaboratePreset(currentSettings);
+        
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
 	
@@ -672,9 +767,11 @@ function writeCalendar(calendario,prefs){
     //se non esiste genero una casella di testo nella prima pagina del documento: dimensioni A4 CON CORNICE DI 10 mm
     if(app.selection.length==1){
 		var myTextFrame = app.selection[0].insertionPoints[0];
+        //var frameLabel = app.selection[0].label;
 	}else{ 
 	    var myTextFrame = myPage.textFrames.add();
 		myTextFrame.geometricBounds = [10, 10, 287 , 200];
+        //var frameLabel = myTextFrame.label;
 	}
 	
 	var ordine = prefs.ordineGenerazione;
@@ -684,10 +781,6 @@ function writeCalendar(calendario,prefs){
 		
 	for (mese in calendario['mesi']){
 		
-		if(prefs.interruzioneCorniceMese == true & c!=0){
-			calendarText += '</frBreak>';
-		}
-		
 		if(prefs.scriviNomeMese == true){
 			
             calendarText += '<ps month>';
@@ -696,7 +789,7 @@ function writeCalendar(calendario,prefs){
 			calendarText += calendario['mesi'][mese]['nome'];
             calendarText += '</cs month>';
             calendarText += '</ps month>';
-			calendarText += '\r';
+			calendarText += prefs.specialChars.chAfterMonth;
 			
 		}
 		
@@ -766,14 +859,22 @@ function writeCalendar(calendario,prefs){
 			}else if (prefs.interruzione == 'pagina'){
 				calendarText += '</pgBreak>';
 			}
+            
 			
             c++;
 			
 		}
+        
+        if(prefs.interruzioneCorniceMese == true & c!=0 & c<365){
+			calendarText += '</frBreak>';
+		}
+        
 	}
 	
         
-    myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;
+    myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;    
+    //saveSettings.label= prefs.generationSettings;
+    myPage.label = prefs.generationSettings;
 	
 	/*
 	******************************
@@ -781,20 +882,26 @@ function writeCalendar(calendario,prefs){
 	******************************
 	*/
 	
-    var applyed = applyStyles();
+    
+    
+    
+    var grep1 = grepSpecialCh('</frBreak>', '~R');
+    
+    if(grep1==true){
+        var grep2 = grepSpecialCh('</pgBreak>', '~P');
+    }
+    
+    if(grep2==true){
+        var appStyles = applyStyles();
+    }
+    
+    if(appStyles == true){
+        grepSpecialCh('</breakRow>','\n');
+    }
 	
-	if (applyed==true){
-		var grep1 = grepSpecialCh('</frBreak>', '~R');
-	}
-	
-	if (grep1==true){
-		var grep2 = grepSpecialCh('</pgBreak>', '~P');
-	}
-	
-	if (grep2==true){
-		var grep3 = grepSpecialCh('</breakRow>','\n');
-	}
-	
+    //cancello l'ultimo carattere di interruzione   
+    //myTextFrame.parentStory.insertionPoints.item(-1).contents = ' ';
+    
 }
 
 
@@ -1218,6 +1325,3 @@ function elaboratePreset(inputString){
 		return inputString.join(sep);
 	}
 }
-
-
-
