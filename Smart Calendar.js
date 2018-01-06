@@ -865,7 +865,7 @@ function writeCalendar(calendario,prefs){
 			
 		}
         
-        if(prefs.interruzioneCorniceMese == true & c!=0){
+        if(prefs.interruzioneCorniceMese == true & c!=0 & c<365){
 			calendarText += '</frBreak>';
 		}
         
@@ -899,6 +899,9 @@ function writeCalendar(calendario,prefs){
         grepSpecialCh('</breakRow>','\n');
     }
 	
+    //cancello l'ultimo carattere di interruzione   
+    //myTextFrame.parentStory.insertionPoints.item(-1).contents = ' ';
+    
 }
 
 
