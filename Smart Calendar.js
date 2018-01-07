@@ -831,6 +831,13 @@ function writeCalendar(calendario,prefs){
 			calendarText += prefs.specialChars.chAfterMonth;
 			
 		}
+        
+        var d = 1;
+        var dd = 1;
+        
+        for(giorno in calendario['mesi'][mese]['giorni']){
+            dd++;
+        }
 		
 		
 		for(giorno in calendario['mesi'][mese]['giorni']) {
@@ -895,13 +902,21 @@ function writeCalendar(calendario,prefs){
 			calendarText += '</ps festivo'+thisDay.festivo+'>';
 			
 			//if()
-			if(prefs.interruzione == 'paragrafo'){
-				calendarText += '\r';
-			}else if (prefs.interruzione == 'cornice'){
-				calendarText += '</frBreak>';
-			}else if (prefs.interruzione == 'pagina'){
-				calendarText += '</pgBreak>';
-			}
+            
+            d++;
+            
+            if(d<dd){
+                if(prefs.interruzione == 'paragrafo'){
+                    calendarText += '\r';
+                }else if (prefs.interruzione == 'cornice'){
+                    calendarText += '</frBreak>';
+                }else if (prefs.interruzione == 'pagina'){
+                    calendarText += '</pgBreak>';
+                }
+            }
+            
+			
+            
             
 			
             c++;
