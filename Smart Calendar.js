@@ -485,12 +485,12 @@ function mainWindow(){
 		if(fineCorn.value==true){ prefs.interruzione = 'cornice';}
 		if(finePag.value==true){ prefs.interruzione = 'pagina';}
         
-        if(chAfterMonth.selection.index==0){prefs.specialChars.chAfterMonth='\n'}
+        if(chAfterMonth.selection.index==0){prefs.specialChars.chAfterMonth='\r'}
         if(chAfterMonth.selection.index==1){prefs.specialChars.chAfterMonth='</frBreak>'}
         if(chAfterMonth.selection.index==2){prefs.specialChars.chAfterMonth='</pgBreak>'}
         if(chAfterMonth.selection.index==3){prefs.specialChars.chAfterMonth='</clBreak>'}
         
-        if(chEndMonth.selection.index==0){prefs.specialChars.chEndMonth='\n'}
+        if(chEndMonth.selection.index==0){prefs.specialChars.chEndMonth='\r'}
         if(chEndMonth.selection.index==1){prefs.specialChars.chEndMonth='</frBreak>'}
         if(chEndMonth.selection.index==2){prefs.specialChars.chEndMonth='</pgBreak>'}
         if(chEndMonth.selection.index==3){prefs.specialChars.chEndMonth='</clBreak>'}
@@ -918,8 +918,8 @@ function writeCalendar(calendario,prefs){
     myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;    
     //saveSettings.label= prefs.generationSettings;
     myPage.label = prefs.generationSettings;
-	
-	/*
+
+    /*
 	******************************
 	* Funzioni grep per applicare gli stili e per aggiungere i caratteri speciali di interruzione
 	******************************
