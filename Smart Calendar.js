@@ -598,7 +598,13 @@ function calGen(anno,prefs){
 	
 	//cancello da calSettings il 29 febbrario nel caso in cui l'anno non sia bisestile
 	var bisestile = bisestileCalc(anno);
-	
+    if(!bisestile){
+        
+        delete calSettings['mesi']['feb']['santi']['29'];
+        calSettings['mesi']['feb']['numero giorni'] = '28';
+    }
+    
+    
 	
 	/*
 	****************
@@ -624,6 +630,9 @@ function calGen(anno,prefs){
 	
 	//il giorno da cui inizia l'anno
 	var day = (day2day0%7);
+    
+    
+    
 	
 	
 	
@@ -700,13 +709,18 @@ function calGen(anno,prefs){
 			
 			
 			//calcolo pasqua
-			if(primavera==false & mese == 'mar' & numero == 21) {
-                //È il 21 marzo, primavera
+			if(primavera==false & mese == 'mar' & numero == 22) {
+                //Il primo giorno di primavera è il 21 marzo
+                //È stato impostato il 22 per evitare l'errore della pasqua nel 2019
 				primavera = true;
 			}
 			
 			if(iniziaAdAspettarePasqua==false & primavera==true & luna==3){
                 //È la prima luna piena di piemavera
+                /*
+                if(mese=='mar' & numero <27 & calendario.anno!=2019){
+                    alert('Attenzione\nIl calcolo della pasqua per l\'anno '+ calendario.anno + ' potrebbe non essere corretto.\nEsegui un attento controllo.');
+                }*/
 				iniziaAdAspettarePasqua = true;
 			}
 			
@@ -1224,8 +1238,6 @@ function bisestileCalc (year) {
 		bisestile = true;
 	}else{
 		bisestile = false;
-		delete calSettings['mesi']['feb']['santi']['29'];
-		calSettings['mesi']['feb']['numero giorni'] = '28';
 	}
 	return bisestile;
 }
