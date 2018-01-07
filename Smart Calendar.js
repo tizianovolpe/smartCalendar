@@ -428,6 +428,7 @@ function mainWindow(){
                     //
                 }else{
                     changePreset(elaboratePreset(myPage.label));
+                    alert('Configurazione impostazioni eseguita con successo.\nIn questo documento sono state trovate delle impostazioni di generazione.')
                 }
                 
             
@@ -765,7 +766,12 @@ function writeCalendar(calendario,prefs){
     //verifico se esiste già un box di testo selezionat
     //se esiste scrivo il calendario dentro alla selezione
     //se non esiste genero una casella di testo nella prima pagina del documento: dimensioni A4 CON CORNICE DI 10 mm
-    if(app.selection.length==1){
+    
+    var startingPoint = selectCh('<startingPoint>');
+    
+    if(startingPoint){
+        var myTextFrame = startingPoint;
+    }else if(app.selection.length==1){
 		var myTextFrame = app.selection[0].insertionPoints[0];
         //var frameLabel = app.selection[0].label;
 	}else{ 
@@ -883,7 +889,7 @@ function writeCalendar(calendario,prefs){
 	*/
 	
     
-    
+    grepSpecialCh('<startingPoint>','');
     
     var grep1 = grepSpecialCh('</frBreak>', '~R');
     
@@ -1256,6 +1262,32 @@ function grepSpecialCh(ch2find,ch2replace){
     app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
 	
 	return true;
+}
+
+function selectCh(ch2find){
+    myDocument= app.documents.item(0);
+    app.findGrepPreferences = NothingEnum.nothing; // now empty the find what field!!! that's important!!!
+    app.changeGrepPreferences = NothingEnum.nothing; // empties the change to field!!! that's important!!!
+	app.findChangeGrepOptions.includeFootnotes = true;
+    app.findChangeGrepOptions.includeHiddenLayers = false;
+    app.findChangeGrepOptions.includeLockedLayersForFind = false;
+    app.findChangeGrepOptions.includeLockedStoriesForFind = true;
+    app.findChangeGrepOptions.includeMasterPages = true;
+	app.findGrepPreferences.findWhat = ch2find;
+    
+    var res = myDocument.findGrep();
+    
+    if(res==''){
+        return false;
+    }else{
+        return app.select(res[0].insertionPoints[0]);
+    }
+    
+    //app.layoutWindows[0].activePage=res[0].words[0].parentTextFrames[0].parent;
+    
+    
+    //myDocument.changeGrep();
+    
 }
 
 
