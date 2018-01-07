@@ -36,6 +36,7 @@ var prefs = {
 	'interruzioneCorniceMese' : true,
 	'tipoLuna' : 'lune3',
 	'interruzione' : 'paragrafo', //oppure [interruzione pagina] [interruzione cornice]
+    'startWithMonday' : false,
 	
     //gli stili da generare paragrafo e carattere	
 	//se crea nuovi stili è false gli stili già essitenti
@@ -113,9 +114,12 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
+var defaultPreset = ['Default',true,false,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice']
+
+/*
 var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice'];
 
-/*var smartmixPreset = '\
+var smartmixPreset = '\
 tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
 Ski club Fossò tavolo|||false|||true|||true|||abbreviati|||completi|||1|||[numero]///[inter. riga forzata]///[giorno]///[fine paragrafo]\
 Auto Carrozzeria Moderna|||false|||true|||true|||iniziale|||completi|||1|||[giorno]///[tab]///[numero]///[fine paragrafo]\
@@ -165,7 +169,7 @@ function mainWindow(){
 				
 				currentSettings[0] = nomePreset.text;
 				currentSettings[1] = startMese.value;
-				currentSettings[2] = 'Campo vuoto';
+				currentSettings[2] = startMonday.value;
 				currentSettings[3] = nZero.value;
 		
 				if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
@@ -226,7 +230,7 @@ function mainWindow(){
 				}
 				
 				startMese.value = preset2use[1];
-				//pgBreakAfterM.value = preset2use[2];
+				startMonday.value = preset2use[2];
 				nZero.value = preset2use[3];
 				
 				if (preset2use[4]=='completi'){ mesiCompleti.value = true; }else{mesiAbbreviati.value=true;}
@@ -322,8 +326,12 @@ function mainWindow(){
             chEndMonth.selection = 1;
             
 			
-			var nZero = baseSettingsPanel.add('checkbox',[10,120,295,140],'Zero davanti ai numeri ad una cifra');
+			var nZero = baseSettingsPanel.add('checkbox',[10,115,295,135],'Zero davanti ai numeri ad una cifra');
 			nZero.value = true;
+            
+            
+            var startMonday = baseSettingsPanel.add('checkbox',[10,135,295,155],'Agg. spazi vuoti se il mese non inizia di lunedì');
+			startMonday.value = false;
             
             
 	
@@ -495,6 +503,8 @@ function mainWindow(){
         if(chEndMonth.selection.index==2){prefs.specialChars.chEndMonth='</pgBreak>'}
         if(chEndMonth.selection.index==3){prefs.specialChars.chEndMonth='</clBreak>'}
         
+        prefs.startWithMonday = startMonday.value;
+        
 		prefs.stylesPrefs.prefissoStili = prefisso.text;
         
         
@@ -503,7 +513,7 @@ function mainWindow(){
         var currentSettings = new Array();
         currentSettings[0] = 'smartCalendarSettings';
         currentSettings[1] = startMese.value;
-        currentSettings[2] = 'campo vuoto';
+        currentSettings[2] = startMonday.value
         currentSettings[3] = nZero.value;
 
         if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
@@ -852,6 +862,71 @@ function writeCalendar(calendario,prefs){
         for(giorno in calendario['mesi'][mese]['giorni']){
             dd++;
         }
+        
+        
+        
+        /*
+        *******************************
+        Se la startWithMonday è attivo aggiungo spazi vuoti quanti sono i giorni che servono
+        ******************************
+        */
+        var startWhitMonday = prefs.startWithMonday; 
+        var startingDay = unCut(calendario.mesi[mese].giorni[1].giorno,calSettings.giorni);  
+        var startingDayIndex = indexOf(startingDay,calSettings.giorni);
+        if(startingDayIndex==0){startingDayIndex=7;}
+        
+        if(startWhitMonday==true){
+            if(startingDay!= calSettings.giorni[1]){
+                
+                for(aa = 1; aa <= startingDayIndex-1; aa++ ){
+                    calendarText +='<ps festivofalse>';
+                    
+                    for(ch in ordine){
+            
+			//passo l'ordine di generazione e creo i blocco giorno
+			
+				
+				if(ordine[ch] == '[giorno]'){
+                    calendarText += '<cs giorno> </cs giorno>';
+				}else if(ordine[ch] == '[numero]'){
+					calendarText += '<cs numero> </cs numero>';
+				}else if(ordine[ch] == '[santo]'){
+					calendarText += '<cs santo> </cs santo>';
+				}else if(ordine[ch] == '[luna]'){
+					calendarText += '<cs luna> </cs luna>';
+				}else if(ordine[ch] == '[numero settimana]'){
+					calendarText += '<cs settimana> </cs settimana>';
+				}else if(ordine[ch] == '[numero giorno]'){
+					calendarText += '<cs nGiorno> </cs nGiorno>';
+				}else if(ordine[ch]== '[anno]'){
+                    calendarText += ' ';
+                }else if(ordine[ch]=='[mese]'){
+                    calendarText += '<cs month> </cs month>';
+                }
+				else if(ordine[ch] == '[tab]') {
+					calendarText += '\t';
+				}else if(ordine[ch] == '[inter. riga forzata]') {
+					calendarText += '</breakRow>';
+				}else{
+					calendarText += ' ';
+				}
+				
+			}
+                    
+                    
+                    
+                    calendarText +='</ps festivofalse>';
+
+                    if(prefs.interruzione == 'paragrafo'){
+                        calendarText += '\r';
+                    }else if (prefs.interruzione == 'cornice'){
+                        calendarText += '</frBreak>';
+                    }else if (prefs.interruzione == 'pagina'){
+                        calendarText += '</pgBreak>';
+                    }
+                }                
+            }
+        }
 		
 		
 		for(giorno in calendario['mesi'][mese]['giorni']) {
@@ -955,6 +1030,7 @@ function writeCalendar(calendario,prefs){
 	*/
 	
     
+    
     grepSpecialCh('<startingPoint>','');
     
     var grep0 = grepSpecialCh('</clBreak>','~M');
@@ -970,6 +1046,8 @@ function writeCalendar(calendario,prefs){
     if(grep2==true){
         var appStyles = applyStyles();
     }
+    
+    
     
     if(appStyles == true){
         grepSpecialCh('</breakRow>','\n');
@@ -1278,6 +1356,16 @@ function cut(string,num){
 	}
 }
 
+function unCut(string,array){
+    var cutValue = string.length;
+    for(a=0; a<array.length; a++){
+        var arrayCutted = cut(array[a],cutValue);
+        if(arrayCutted==string){
+            return array[a];
+        }
+    }
+}
+
 
 function grepStyle(type,stileName,string2find){
 	
@@ -1425,3 +1513,13 @@ function elaboratePreset(inputString){
 		return inputString.join(sep);
 	}
 }
+
+function indexOf(string,array){
+    for(b=0;b<array.length;b++){
+        if(array[b]==string){
+            return b;
+        }
+    }
+    
+}
+
