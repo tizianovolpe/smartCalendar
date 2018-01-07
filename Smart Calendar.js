@@ -113,7 +113,7 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
-var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo'];
+var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice'];
 
 /*var smartmixPreset = '\
 tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
@@ -165,7 +165,7 @@ function mainWindow(){
 				
 				currentSettings[0] = nomePreset.text;
 				currentSettings[1] = startMese.value;
-				currentSettings[2] = pgBreakAfterM.value;
+				currentSettings[2] = 'Campo vuoto';
 				currentSettings[3] = nZero.value;
 		
 				if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
@@ -226,7 +226,7 @@ function mainWindow(){
 				}
 				
 				startMese.value = preset2use[1];
-				pgBreakAfterM.value = preset2use[2];
+				//pgBreakAfterM.value = preset2use[2];
 				nZero.value = preset2use[3];
 				
 				if (preset2use[4]=='completi'){ mesiCompleti.value = true; }else{mesiAbbreviati.value=true;}
@@ -309,19 +309,23 @@ function mainWindow(){
 			var startMese = baseSettingsPanel.add('checkbox',[10,40,295,60],'Scrivi il nome del mese quando inizia');
 			startMese.value = true;
 	
-			var pgBreakAfterM = baseSettingsPanel.add('checkbox',[10,60,295,80],'Interr. di cornice quando finisce il mese');
-			pgBreakAfterM.value = true;
-			
-			var nZero = baseSettingsPanel.add('checkbox',[10,80,295,100],'Zero davanti ai numeri ad una cifra');
-			nZero.value = true;
+			//var pgBreakAfterM = baseSettingsPanel.add('checkbox',[10,60,295,80],'Interr. di cornice quando finisce il mese');
+			//pgBreakAfterM.value = true;
+    
             
-            baseSettingsPanel.add('statictext',[10,100,150,120],'Dopo il nome del mese:');
-            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,100,270,120],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
+            baseSettingsPanel.add('statictext',[10,65,150,85],'Dopo il nome del mese:');
+            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,65,270,85],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
             chAfterMonth.selection = 0;
     
-            baseSettingsPanel.add('statictext',[10,125,150,145],'Quando il mese finisce:');
-            var chEndMonth = baseSettingsPanel.add('dropdownlist',[150,125,270,145],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
+            baseSettingsPanel.add('statictext',[10,90,150,110],'Quando il mese finisce:');
+            var chEndMonth = baseSettingsPanel.add('dropdownlist',[150,90,270,110],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
             chEndMonth.selection = 1;
+            
+			
+			var nZero = baseSettingsPanel.add('checkbox',[10,120,295,140],'Zero davanti ai numeri ad una cifra');
+			nZero.value = true;
+            
+            
 	
 	
 		var customSettingsPanel = riga1.add('panel',[305,6,600,240]);
@@ -461,7 +465,7 @@ function mainWindow(){
 	if(myReturn == true){
 		
 		prefs.scriviNomeMese = startMese.value;
-		prefs.interruzioneCorniceMese = pgBreakAfterM.value;
+		//prefs.interruzioneCorniceMese = pgBreakAfterM.value;
 		prefs.zeroNum1cifra = nZero.value;
 		
 		if(mesiCompleti.value==true){ prefs.nomeMese = 0; }
@@ -499,7 +503,7 @@ function mainWindow(){
         var currentSettings = new Array();
         currentSettings[0] = 'smartCalendarSettings';
         currentSettings[1] = startMese.value;
-        currentSettings[2] = pgBreakAfterM.value;
+        currentSettings[2] = 'campo vuoto';
         currentSettings[3] = nZero.value;
 
         if(mesiCompleti.value==true){ currentSettings[4] = 'completi'; }
@@ -820,9 +824,9 @@ function writeCalendar(calendario,prefs){
 			
             calendarText += '<ps month>';
             calendarText += prefs.specialChars.chBeforeMonth;
-            calendarText += '<cs month>';
+            //calendarText += '<cs month>';
 			calendarText += calendario['mesi'][mese]['nome'];
-            calendarText += '</cs month>';
+            //calendarText += '</cs month>';
             calendarText += '</ps month>';
 			calendarText += prefs.specialChars.chAfterMonth;
 			
@@ -870,7 +874,11 @@ function writeCalendar(calendario,prefs){
 					
 				}else if(ordine[ch] == '[numero giorno]'){
 					calendarText += '<cs nGiorno>'+thisDay['counter']+'</cs nGiorno>';
-				}
+				}else if(ordine[ch]== '[anno]'){
+                    calendarText += calendario.anno;
+                }else if(ordine[ch]=='[mese]'){
+                    calendarText += '<cs month>'+calendario.mesi[mese].nome+'</cs month>';
+                }
 				
 				
 				else if(ordine[ch] == '[tab]') {
