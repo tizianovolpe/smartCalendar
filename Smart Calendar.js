@@ -100,7 +100,8 @@ var prefs = {
 	'specialChars' : {
 		'fineParagrafo' : '\r',
 		'chBeforeMonth': '', //il carattere che compare prima del mese
-		'chAfterMonth' : '\r', // il carattere che compare dopo il mese
+		'chAfterMonth' : '\r', // il carattere che compare dopo il nome mese
+        'chEndMonth' : '\r', //il carattere che compare quando finisce il mese
 		'intRigaForzata' : '\n',
 		//'intPagina' : SpecialCharacters.pageBreak,
 		//'intCornice' : ScpecialCharacters.frameBreak,
@@ -197,6 +198,12 @@ function mainWindow(){
                 if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
                 if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
                 if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
+                if(chAfterMonth.selection.index==3){currentSettings[10]='colonna'}
+                
+                if(chEndMonth.selection.index==0){currentSettings[11]='paragrafo'}
+                if(chEndMonth.selection.index==1){currentSettings[11]='cornice'}
+                if(chEndMonth.selection.index==2){currentSettings[11]='pagina'}
+                if(chEndMonth.selection.index==3){currentSettings[11]='colonna'}
 				
 				addPreset(currentSettings);
 				alert('Il nuovo predefinito è stato salvato.');
@@ -268,6 +275,12 @@ function mainWindow(){
                 if(preset2use[10]=='paragrafo'){chAfterMonth.selection = 0; }
                 if(preset2use[10]=='cornice'){chAfterMonth.selection = 1; }
                 if(preset2use[10]=='pagina'){chAfterMonth.selection = 2; }
+                if(preset2use[10]=='colonna'){chAfterMonth.selection = 3; }
+                
+                if(preset2use[11]=='paragrafo'){chEndMonth.selection = 0; }
+                if(preset2use[11]=='cornice'){chEndMonth.selection = 1; }
+                if(preset2use[11]=='pagina'){chEndMonth.selection = 2; }
+                if(preset2use[11]=='colonna'){chEndMonth.selection = 3; }
                 
                 
 			
@@ -303,8 +316,12 @@ function mainWindow(){
 			nZero.value = true;
             
             baseSettingsPanel.add('statictext',[10,100,150,120],'Dopo il nome del mese:');
-            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,100,270,120],['Fine paragrafo','Interr. Cornice','Interr. Pagina']);
+            var chAfterMonth = baseSettingsPanel.add('dropdownlist',[150,100,270,120],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
             chAfterMonth.selection = 0;
+    
+            baseSettingsPanel.add('statictext',[10,125,150,145],'Quando il mese finisce:');
+            var chEndMonth = baseSettingsPanel.add('dropdownlist',[150,125,270,145],['Fine paragrafo','Interr. Cornice','Interr. Pagina','Interr. Colonna']);
+            chEndMonth.selection = 1;
 	
 	
 		var customSettingsPanel = riga1.add('panel',[305,6,600,240]);
@@ -467,6 +484,12 @@ function mainWindow(){
         if(chAfterMonth.selection.index==0){prefs.specialChars.chAfterMonth='\n'}
         if(chAfterMonth.selection.index==1){prefs.specialChars.chAfterMonth='</frBreak>'}
         if(chAfterMonth.selection.index==2){prefs.specialChars.chAfterMonth='</pgBreak>'}
+        if(chAfterMonth.selection.index==3){prefs.specialChars.chAfterMonth='</clBreak>'}
+        
+        if(chEndMonth.selection.index==0){prefs.specialChars.chEndMonth='\n'}
+        if(chEndMonth.selection.index==1){prefs.specialChars.chEndMonth='</frBreak>'}
+        if(chEndMonth.selection.index==2){prefs.specialChars.chEndMonth='</pgBreak>'}
+        if(chEndMonth.selection.index==3){prefs.specialChars.chEndMonth='</clBreak>'}
         
 		prefs.stylesPrefs.prefissoStili = prefisso.text;
         
@@ -508,6 +531,12 @@ function mainWindow(){
         if(chAfterMonth.selection.index==0){currentSettings[10]='paragrafo'}
         if(chAfterMonth.selection.index==1){currentSettings[10]='cornice'}
         if(chAfterMonth.selection.index==2){currentSettings[10]='pagina'}
+        if(chAfterMonth.selection.index==3){currentSettings[10]='colonna'}
+        
+        if(chEndMonth.selection.index==0){currentSettings[11]='paragrafo'}
+        if(chEndMonth.selection.index==1){currentSettings[11]='cornice'}
+        if(chEndMonth.selection.index==2){currentSettings[11]='pagina'}
+        if(chEndMonth.selection.index==3){currentSettings[11]='colonna'}
         
         prefs.generationSettings = elaboratePreset(currentSettings);
         
@@ -871,8 +900,8 @@ function writeCalendar(calendario,prefs){
 			
 		}
         
-        if(prefs.interruzioneCorniceMese == true & c!=0 & c<365){
-			calendarText += '</frBreak>';
+        if(c!=0 & c<365){
+			calendarText += prefs.specialChars.chEndMonth;
 		}
         
 	}
@@ -891,7 +920,11 @@ function writeCalendar(calendario,prefs){
     
     grepSpecialCh('<startingPoint>','');
     
-    var grep1 = grepSpecialCh('</frBreak>', '~R');
+    var grep0 = grepSpecialCh('</clBreak>','~M');
+    
+    if(grep0==true){
+        var grep1 = grepSpecialCh('</frBreak>', '~R');
+    }
     
     if(grep1==true){
         var grep2 = grepSpecialCh('</pgBreak>', '~P');
