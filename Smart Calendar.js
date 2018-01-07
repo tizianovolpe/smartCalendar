@@ -870,13 +870,13 @@ function writeCalendar(calendario,prefs){
         Se la startWithMonday è attivo aggiungo spazi vuoti quanti sono i giorni che servono
         ******************************
         */
-        var startWhitMonday = prefs.startWithMonday;
-        var startingDay = calendario.mesi[mese].giorni[1].giorno;
+        var startWhitMonday = prefs.startWithMonday; 
+        var startingDay = unCut(calendario.mesi[mese].giorni[1].giorno,calSettings.giorni);  
         var startingDayIndex = indexOf(startingDay,calSettings.giorni);
         if(startingDayIndex==0){startingDayIndex=7;}
         
         if(startWhitMonday==true){
-            if(startingDay!=calSettings.giorni[1]){
+            if(startingDay!= calSettings.giorni[1]){
                 
                 for(aa = 1; aa <= startingDayIndex-1; aa++ ){
                     calendarText +='<ps festivofalse>';
@@ -1356,6 +1356,16 @@ function cut(string,num){
 	}
 }
 
+function unCut(string,array){
+    var cutValue = string.length;
+    for(a=0; a<array.length; a++){
+        var arrayCutted = cut(array[a],cutValue);
+        if(arrayCutted==string){
+            return array[a];
+        }
+    }
+}
+
 
 function grepStyle(type,stileName,string2find){
 	
@@ -1505,7 +1515,6 @@ function elaboratePreset(inputString){
 }
 
 function indexOf(string,array){
-    
     for(b=0;b<array.length;b++){
         if(array[b]==string){
             return b;
@@ -1513,3 +1522,4 @@ function indexOf(string,array){
     }
     
 }
+
