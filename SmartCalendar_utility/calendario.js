@@ -548,6 +548,27 @@ var calSettings = {
             'start' : 'pasqua'
 		},
 		
+		'giovediSanto' : {
+			'nome' : 'Giovedì Santo',
+			'giorno' : -3,
+			'festivo' : false,
+            'start' : 'pasqua'
+		},
+		
+		'venerdiSanto' : {
+			'nome' : 'Venerdì Santo',
+			'giorno' : -2,
+			'festivo' : false,
+            'start' : 'pasqua'
+		},
+		
+		'sabatoSanto' : {
+			'nome' : 'Sabato Santo',
+			'giorno' : -1,
+			'festivo' : false,
+            'start' : 'pasqua'
+		},
+		
 		'pasqua' : {
 			'nome' : 'Pasqua di Resurrezione',
 			'giorno' : 0,
