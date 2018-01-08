@@ -8,8 +8,7 @@ Formattando gli stili nel modo corretto si può ottenere qualsiasi tipo di impag
 ## Informazioni ##
 Questo script è stato sviluppato per velocizzare il flusso di lavoro di una delle parti più noiose del lavoro del grafico: la creazione di un calendario. Un lavoro lungo, ripetitivo e con un alto margine di errore. Quando l’abbiamo realizzato pensavamo principalmente ad un utilizzo interno ma vista l’utilità e la versatilità abbiamo deciso di divulgarlo gratuitamente. Il fatto di non essere un prodotto commerciale lo porta inevitabilmente ad una ridotta fase di testing e debug. Vi chiediamo quindi di segnalarci quelli che sono malfunzionamenti o possibili migliorie.
 
-[smartmix.it](https://smartmix.it)
-[info@smartmix.it](mailto:info@smartmix.it)
+[smartmix.it](https://smartmix.it) - [info@smartmix.it](mailto:info@smartmix.it)
 
 
 
