@@ -374,7 +374,7 @@ var calSettings = {
 			'nome' : 'novembre',
 			'santi' : {
 				'1' : 'Tutti i Santi',
-				'2' : 'Commemorazione dei Defunti',
+				'2' : 'Commem. dei Defunti',
 				'3' : 'S. Silvia',
 				'4' : 'S. Carlo B.',
 				'5' : 'S. Donnino',
@@ -457,10 +457,10 @@ var calSettings = {
             
         },
 		'apr' : {
-			'25' : 'S. Marco Ev - Anniversario Liberazione'
+			'25' : 'Anniversario Liberazione'
 		},
 		'mag' : {
-			'1' : 'S. Giuseppe - Festa del Lavoro'
+			'1' : 'Festa del Lavoro'
 		},
 		'giu' : {
 			'2' : 'Festa della Repubblica'

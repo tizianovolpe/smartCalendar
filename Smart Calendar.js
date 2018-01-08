@@ -1065,6 +1065,7 @@ function applyStyles(){
 	var myDocument= app.documents.item(0);
     var fonts = myDocument.fonts;
 	
+	
 	/*
 	***************************************
 	* creazione degli stili di paragrafo e di carattere
@@ -1080,12 +1081,11 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParFestivi = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
-				try{
-					stileParFestivi.appliedFont = app.fonts.item('Arial');
-					stileParFestivi.fontStyle = 'Bold';
-				}catch(errore){}
+				stileParFestivi.appliedFont = app.fonts.item('Arial');
+				stileParFestivi.fontStyle = 'Bold';
 			}catch(errore){
 				var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
+				
 			}
 		}else{
 			var stileParFestivi = myDocument.paragraphStyles.item(prefs.stylesPrefs.styles[style2gen].name);
@@ -1103,10 +1103,9 @@ function applyStyles(){
 		if(prefs.stylesPrefs.createNewStyles == true){
 			try{
 				var stileParFeriali = myDocument.paragraphStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name});
-				try{
-					stileParFeriali.appliedFont = app.fonts.item('Arial');
-					stileParFeriali.fontStyle = 'Regular';
-				}catch(errore){}
+				stileParFeriali.appliedFont = app.fonts.item('Arial');
+				stileParFeriali.fontStyle = 'Regular';
+				
 			}catch(errore){
 				var stileParFeriali = myDocument.paragraphStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 			}
@@ -1228,20 +1227,20 @@ function applyStyles(){
 				var stileCarLune = myDocument.characterStyles.add({name: prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name });
 				try{
 					stileCarLune.appliedFont = app.fonts.item(fontLune);
-					stileParFeriali.fontStyle = 'Regular';
+					stileCarLune.fontStyle = 'Regular';
 				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}catch(errore){
 				var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.prefissoStili + prefs.stylesPrefs.styles[style2gen].name);
 				try{
 					stileCarLune.appliedFont = fontLune;
-					stileParFeriali.fontStyle = 'Regular';
+					stileCarLune.fontStyle = 'Regular';
 				}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 			}
 		}else{
 			var stileCarLune = myDocument.characterStyles.item(prefs.stylesPrefs.styles[style2gen].name);
 			try{
 				stileCarLune.appliedFont = fontLune;
-				stileParFeriali.fontStyle = 'Regular';
+				stileCarLune.fontStyle = 'Regular';
 			}catch(errore){alert('devi installare la font '+fontLune+' per vedere correttamente le lune');}
 		}
 		
