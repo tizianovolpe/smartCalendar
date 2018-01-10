@@ -14,4 +14,4 @@ Questo script è stato sviluppato per velocizzare il flusso di lavoro di una del
 
 ## Author ##
 
-* **Tiziano Volpe** - *Smart Mix* - [smartmix.it](https://smartmix.it)
+* **Tiziano Volpe** - *Smart Mix* - [smartmix.it](https://smartmix.it) 
