@@ -15,7 +15,7 @@
 
 
 var nome = "Smart Calendar";
-var versione = "1.0 Beta";
+var versione = "1.1 Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
