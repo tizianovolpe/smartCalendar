@@ -2,7 +2,7 @@
  *
  * @name Smart Calendar
  * @desc Indesign script to create a calendar with italian festivity, saint, moons and Catholic mobile days
- * @version 1.0 beta
+ * @version 1.1 beta
  *
  * @author Smart Mix smartmix.it
  * @link https://smartmix.it
@@ -659,6 +659,7 @@ function calGen(anno,prefs){
     var counterGiorni = 0;
 	var settimana = 1;
     
+    //vecchio calcolo della pasqua impreciso
     //variabili che servono per la pasqua
 	//var pasqua = false;
 	//var primavera = false; //questa variabile di attiva dopo il 21 marzo, pasqua è la prima domenica di luna piena dopo il 21 marzo
@@ -720,7 +721,7 @@ function calGen(anno,prefs){
             }
 			
 			/*
-			
+			//vecchio calcolo della pasqua impreciso
 			//calcolo pasqua
 			if(primavera==false & mese == 'mar' & numero == 22) {
                 //Il primo giorno di primavera è il 21 marzo
@@ -742,8 +743,9 @@ function calGen(anno,prefs){
 			}
             */
             
+            
             if(mese==(pasquaMeseGiorno[0]) & numero == pasquaMeseGiorno[1]){
-                alert(mese+' '+numero);
+                //alert(mese+' '+numero);
                 var pasqua = counterGiorni;
             }
             
@@ -1526,6 +1528,8 @@ function indexOf(string,array){
     }
     
 }
+
+
 
 /*
 * @see https://it.wikibooks.org/wiki/Implementazioni_di_algoritmi/Calcolo_della_Pasqua

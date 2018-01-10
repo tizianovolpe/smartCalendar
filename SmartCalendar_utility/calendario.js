@@ -577,7 +577,7 @@ var calSettings = {
 		},
 		
 		'pasquetta' : {
-			'nome' : 'Lunedì dell\' Angelo',
+			'nome' : 'Lunedì dell\'Angelo',
 			'giorno' :  +1,
 			'festivo' : true,
             'start' : 'pasqua'
