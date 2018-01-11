@@ -8,9 +8,17 @@
  * @link https://smartmix.it
  * 
  * 
- * @see https://smartmix.it/grafica-design/smart-calendar-indesign/ 
+ * @see https://smartmix.it/grafica-design/smart-calendar-indesign/
  
  
+ * # Changelog
+ *
+ *  ## 1.1 beta
+ 	Modificata la funzione di calcolo della pasqua con questo algoritmo https://it.wikibooks.org/wiki/Implementazioni_di_algoritmi/Calcolo_della_Pasqua
+	Il calcolo della Pasqua precedente utilizzava come valore la domenica della prima la luna piena di primavera ma portava a degli errori per alcuni anni (2019)
+ *	
+ *	
+ *
  */
 
 
@@ -24,8 +32,8 @@ var presetsFilePath = File(getScriptPath()+'/'+utilityFolder+'/'+presetsFile);
 
 
 var prefs = {
-    'startDay' : [1,'gen'] , //il giorno da cui deve iniziar il calcolo del calendario. Default 1 gennaio
-    'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre
+    'startDay' : [1,'gen'] , //il giorno da cui deve iniziare il calcolo del calendario. Default 1 gennaio
+    'endDay' : [31,'dic'], // il giorno in cui deve finire il calendario. Default 31 dicembre (al momento: versione 1.1 queste variabili non sono ancora utilizzate)
 	'ordineGenerazione' : ['[numero]','[tab]','[giorno]','[tab]','[santo]','[tab]','[luna]'],
 	'optionalValue' : ["[numero]","[giorno]","[santo]","[luna]","[mese]","[anno]","[tab]","[numero giorno]","[numero settimana]","[inter. riga forzata]"],
 	'santi' : true,
@@ -35,7 +43,7 @@ var prefs = {
 	'scriviNomeMese' : true,
 	'interruzioneCorniceMese' : true,
 	'tipoLuna' : 'lune3',
-	'interruzione' : 'paragrafo', //oppure [interruzione pagina] [interruzione cornice]
+	'interruzione' : 'paragrafo', //oppure pagina, cornice
     'startWithMonday' : false,
 	
     //gli stili da generare paragrafo e carattere	
@@ -114,18 +122,7 @@ var prefs = {
 var sep = '|||';
 var sepL = '///';
 
-var defaultPreset = ['Default',true,false,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice']
-
-/*
-var defaultPreset = ['Default Preset',true,true,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice'];
-
-var smartmixPreset = '\
-tornado|||true|||true|||false|||completi|||completi|||1|||[numero]///[tab]///[giorno]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]///[anno]///[luna]///[giorno]///[mese]\
-Ski club Fossò tavolo|||false|||true|||true|||abbreviati|||completi|||1|||[numero]///[inter. riga forzata]///[giorno]///[fine paragrafo]\
-Auto Carrozzeria Moderna|||false|||true|||true|||iniziale|||completi|||1|||[giorno]///[tab]///[numero]///[fine paragrafo]\
-parrocchia Cazzago|||true|||true|||true|||abbreviati|||abbreviati|||1|||[numero]///[tab]///[luna]///[inter. riga forzata]///[tab]///[giorno]///[tab]///[santo]///[fine paragrafo]\
-Calendario coin|||false|||true|||false|||abbreviati|||abbreviati|||1|||[tab]///[numero]///[inter. riga forzata]///[tab]///[tab]///[giorno]///[inter. riga forzata]///[tab]///[tab]///[santo]///[tab]///[luna]///[fine paragrafo]';*/
-
+var defaultPreset = ['Default',true,false,true,'completi','completi',1,'vuoto','paragrafo','[numero]' + sepL + '[tab]' + sepL + '[giorno]' + sepL + '[tab]' + sepL + '[santo]' + sepL + '[tab]' + sepL + '[luna]','paragrafo','cornice'];
 
 
 //importo il file di impostazione
@@ -145,7 +142,6 @@ try {
 
 
 if(calendarFile==true){
-    //writeCalendar(calGen(2018,prefs),prefs);
 	mainWindow();
 }
 
@@ -219,8 +215,6 @@ function mainWindow(){
     
     
             function changePreset (preset2use){
-				//var preset2use = elaboratePreset(readPresets()[presetsList.selection.index]);
-                //alert(preset2use[1]);
 				for (k in preset2use){
 					if(preset2use[k] == 'true'){
 						preset2use[k] = true;
@@ -411,7 +405,6 @@ function mainWindow(){
 	function creaArray(lista){
 		var array = new Array();
 		for(i=0; i<lista.items.length;i++){
-			//alert(toString(lista.items[i].constructor.name));
 			array[i]=lista.items[i].text;
 		}
 		return array;
@@ -462,7 +455,7 @@ function mainWindow(){
                 
             
             }catch(a){
-                //alert(e);
+                //alert(a);
             }
 			
 			
@@ -473,7 +466,6 @@ function mainWindow(){
 	if(myReturn == true){
 		
 		prefs.scriviNomeMese = startMese.value;
-		//prefs.interruzioneCorniceMese = pgBreakAfterM.value;
 		prefs.zeroNum1cifra = nZero.value;
 		
 		if(mesiCompleti.value==true){ prefs.nomeMese = 0; }
@@ -553,7 +545,6 @@ function mainWindow(){
         if(chEndMonth.selection.index==3){currentSettings[11]='colonna'}
         
         prefs.generationSettings = elaboratePreset(currentSettings);
-        
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
 	
@@ -586,9 +577,14 @@ calendario = {
 					'counter' : il numero del giorno nell anno
 					'settimana' : se lunedì numero oppure false
 				}
+				
+				'gli altri giorni' : {
+				
+				}
+				
 			}
 		},
-        'gli altri mesi'{
+        'gli altri mesi': {
             ....
         }
     }
@@ -805,7 +801,6 @@ function calGen(anno,prefs){
         }
     }
     
-    //alert(calendario['mesi']['mar']['giorni'][31]['luna']);
         
     return calendario;
     
@@ -827,7 +822,7 @@ function writeCalendar(calendario,prefs){
     var myPage = myDocument.pages.item(0);
     var calendarText = '';
     
-    //verifico se esiste già un box di testo selezionat
+    //verifico se esiste la stringa <startingPoint> o se c'è già un box di testo selezionato
     //se esiste scrivo il calendario dentro alla selezione
     //se non esiste genero una casella di testo nella prima pagina del documento: dimensioni A4 CON CORNICE DI 10 mm
     
@@ -837,11 +832,9 @@ function writeCalendar(calendario,prefs){
         var myTextFrame = startingPoint;
     }else if(app.selection.length==1){
 		var myTextFrame = app.selection[0].insertionPoints[0];
-        //var frameLabel = app.selection[0].label;
 	}else{ 
 	    var myTextFrame = myPage.textFrames.add();
 		myTextFrame.geometricBounds = [10, 10, 287 , 200];
-        //var frameLabel = myTextFrame.label;
 	}
 	
 	var ordine = prefs.ordineGenerazione;
@@ -855,9 +848,7 @@ function writeCalendar(calendario,prefs){
 			
             calendarText += '<ps month>';
             calendarText += prefs.specialChars.chBeforeMonth;
-            //calendarText += '<cs month>';
 			calendarText += calendario['mesi'][mese]['nome'];
-            //calendarText += '</cs month>';
             calendarText += '</ps month>';
 			calendarText += prefs.specialChars.chAfterMonth;
 			
@@ -874,7 +865,7 @@ function writeCalendar(calendario,prefs){
         
         /*
         *******************************
-        Se la startWithMonday è attivo aggiungo spazi vuoti quanti sono i giorni che servono
+        Se startWithMonday è attivo aggiungo spazi vuoti quanti sono i giorni che servono
         ******************************
         */
         var startWhitMonday = prefs.startWithMonday; 
@@ -1445,11 +1436,6 @@ function selectCh(ch2find){
         return app.select(res[0].insertionPoints[0]);
     }
     
-    //app.layoutWindows[0].activePage=res[0].words[0].parentTextFrames[0].parent;
-    
-    
-    //myDocument.changeGrep();
-    
 }
 
 
@@ -1587,6 +1573,4 @@ function calcolaPasqua(anno){
     
     return [mese,giorno];
     
-} 
-
-
+}
