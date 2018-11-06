@@ -17,13 +17,15 @@
  	Modificata la funzione di calcolo della pasqua con questo algoritmo https://it.wikibooks.org/wiki/Implementazioni_di_algoritmi/Calcolo_della_Pasqua
 	Il calcolo della Pasqua precedente utilizzava come valore la domenica della prima la luna piena di primavera ma portava a degli errori per alcuni anni (2019)
  *	
- *	
+ *	## 1.2 beta
+    Thanks to thelukemc
+    Corretto l'errore che non permetteva la generazione dell'ultimo quarto di luna 
  *
  */
 
 
 var nome = "Smart Calendar";
-var versione = "1.1 Beta";
+var versione = "1.2 Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
@@ -955,7 +957,7 @@ function writeCalendar(calendario,prefs){
                             calendarText += '<cs luna>'+moons[1]+'</cs luna>';
                         }else if(thisDay['luna'] == 3 ){
 							calendarText += '<cs luna>'+moons[2]+'</cs luna>';
-						}else if(thisDay['una'] == 4 ){
+						}else if(thisDay['luna'] == 4 ){
 							calendarText += '<cs luna>'+moons[3]+'</cs luna>';
 						}
 					}
