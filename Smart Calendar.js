@@ -18,7 +18,7 @@
 	Il calcolo della Pasqua precedente utilizzava come valore la domenica della prima la luna piena di primavera ma portava a degli errori per alcuni anni (2019)
  *	
  *	## 1.2 beta
-    Thanks to thelukemc
+    Thanks to Luca Ceneda
     Corretto l'errore che non permetteva la generazione dell'ultimo quarto di luna 
  *
  */
