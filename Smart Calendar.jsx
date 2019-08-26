@@ -21,11 +21,16 @@
     Thanks to Luca Ceneda
     Corretto l'errore che non permetteva la generazione dell'ultimo quarto di luna 
  *
+ *	
+ *	## 1.3 beta
+    Estesa la compatibilità con indesign cc2019. Quando il testo era troppo lungo non veniva eseguita l'applicazione degli stili di carattere e di paragrafo
+    Cambiata l'estensione in jsx per risolvere il problema delle lettere accentate
+ *
  */
 
 
 var nome = "Smart Calendar";
-var versione = "1.2 Beta";
+var versione = "1.3 Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
@@ -822,7 +827,7 @@ function writeCalendar(calendario,prefs){
     
     var myDocument= app.documents.item(0);	
     var myPage = myDocument.pages.item(0);
-    var calendarText = '';
+    
     
     //verifico se esiste la stringa <startingPoint> o se c'è già un box di testo selezionato
     //se esiste scrivo il calendario dentro alla selezione
@@ -846,6 +851,8 @@ function writeCalendar(calendario,prefs){
 		
 	for (mese in calendario['mesi']){
 		
+        var calendarText = '';
+        
 		if(prefs.scriviNomeMese == true){
 			
             calendarText += '<ps month>';
@@ -1016,42 +1023,51 @@ function writeCalendar(calendario,prefs){
 			calendarText += prefs.specialChars.chEndMonth;
 		}
         
+        
+        
+        //complatibilità cc2019, è stato spostato questa sezione dentro al ciclo for del mese
+        
+            myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;    
+            //saveSettings.label= prefs.generationSettings;
+            myPage.label = prefs.generationSettings;
+
+            /*
+            ******************************
+            * Funzioni grep per applicare gli stili e per aggiungere i caratteri speciali di interruzione
+            ******************************
+            */
+
+
+
+            grepSpecialCh('<startingPoint>','');
+
+            var grep0 = grepSpecialCh('</clBreak>','~M');
+
+            if(grep0==true){
+                var grep1 = grepSpecialCh('</frBreak>', '~R');
+            }
+
+            if(grep1==true){
+                var grep2 = grepSpecialCh('</pgBreak>', '~P');
+            }
+
+            if(grep2==true){
+                var appStyles = applyStyles();
+            }
+
+
+
+            if(appStyles == true){
+                grepSpecialCh('</breakRow>','\n');
+    }
+        
+        
+        
+        
 	}
 	
         
-    myTextFrame.parentStory.insertionPoints.item(-1).contents = calendarText;    
-    //saveSettings.label= prefs.generationSettings;
-    myPage.label = prefs.generationSettings;
 
-    /*
-	******************************
-	* Funzioni grep per applicare gli stili e per aggiungere i caratteri speciali di interruzione
-	******************************
-	*/
-	
-    
-    
-    grepSpecialCh('<startingPoint>','');
-    
-    var grep0 = grepSpecialCh('</clBreak>','~M');
-    
-    if(grep0==true){
-        var grep1 = grepSpecialCh('</frBreak>', '~R');
-    }
-    
-    if(grep1==true){
-        var grep2 = grepSpecialCh('</pgBreak>', '~P');
-    }
-    
-    if(grep2==true){
-        var appStyles = applyStyles();
-    }
-    
-    
-    
-    if(appStyles == true){
-        grepSpecialCh('</breakRow>','\n');
-    }
 	
     //cancello l'ultimo carattere di interruzione   
     //myTextFrame.parentStory.insertionPoints.item(-1).contents = ' ';
