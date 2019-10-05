@@ -30,7 +30,7 @@
 
 
 var nome = "Smart Calendar";
-var versione = "1.3 Beta";
+var versione = "1.3_Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
@@ -158,6 +158,9 @@ if(calendarFile==true){
 
 
 function mainWindow(){
+    
+
+    
 	var oggi = new Date();
 	var myReturn = false;
 	
@@ -475,8 +478,9 @@ function mainWindow(){
 			
 			
 			
-			
+     stats('open_window');
 	w.show();
+   
 	
 	if(myReturn == true){
 		
@@ -563,6 +567,10 @@ function mainWindow(){
 		writeCalendar(calGen(anno.text,prefs),prefs);
 	}
 	
+    
+    
+        
+    
 }
 
 
@@ -611,6 +619,8 @@ calendario = {
 function calGen(anno,prefs){
 	
 	
+    stats('gen_cal');
+    
 	//la variabile che conterrà tutto il calendario
 	var calendario = {};
     calendario['anno'] = anno;
@@ -1540,6 +1550,37 @@ function indexOf(string,array){
     }
     
 }
+
+
+
+
+function stats(type){
+    
+    
+    //var url = 'https://smartmix.it/smartcalendar/stats.php?type='+type;
+    var url = 'https://smartmix.it/smartcalendar/stats.php?type=' + type;
+    
+    
+    if(isMacOS()){
+        var command = 'do shell script "curl ' + url + '"';
+        var response = app.doScript(command, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+    }else{
+        //
+    }
+    
+    
+    
+    
+}
+
+
+
+function isMacOS() {
+  return ($.os.toLowerCase().indexOf('mac') >= 0);
+}
+
+
+
 
 
 
