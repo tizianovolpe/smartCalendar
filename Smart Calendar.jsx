@@ -36,6 +36,10 @@ var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
 var presetsFile = 'presets.txt';
 var presetsFilePath = File(getScriptPath()+'/'+utilityFolder+'/'+presetsFile);
+var bannerIMG = File(getScriptPath()+'/'+utilityFolder+'/'+'main-banner-calendar.png');
+//var bannerIMG = 'https://smartmix.it/images/main-banner-calendar.jpg';
+    
+
 
 
 var prefs = {
@@ -299,7 +303,11 @@ function mainWindow(){
                 changePreset(elaboratePreset(readPresets()[presetsList.selection.index]));
             }
             
-        
+            
+            
+            
+            
+            var banner = w.add ("image", undefined, bannerIMG);
 		
 	var riga1 = w.add('group',[0,50,600,300]);
 		var scriptInfo = riga1.add('panel',[0,6,295,70]);
