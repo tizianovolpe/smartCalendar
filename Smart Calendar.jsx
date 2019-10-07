@@ -30,7 +30,7 @@
 
 
 var nome = "Smart Calendar";
-var versione = "1.3_Beta";
+var versione = "1.4_Beta";
 var scriptLink = 'https://smartmix.it/grafica-design/smart-calendar-indesign/';
 var utilityFolder = 'SmartCalendar_utility';
 var settingsFile = 'calendario.js';
@@ -1553,23 +1553,58 @@ function indexOf(string,array){
 
 
 
+function getUID(){
+    
+    var UIDFile = File(getScriptPath()+'/'+utilityFolder+'/UID.txt');
+    
+	if(!UIDFile.exists){		
+		UIDFile.open('w');
+		UIDFile.encoding = "UTF-8";
+		UIDFile.write(genUID());
+		UIDFile.close();
+	}
+    
+    
+    UIDFile.open('r');
+	var arrayRighe = new Array;
+	arrayRighe = UIDFile.read().split('\n');
+	return arrayRighe;
+    
+}
+
+
+function genUID(){
+    
+    var d = new Date();
+    var n = d.getTime();
+    
+    var UID = n + '-' + Math.floor(Math.random() * 101);
+    
+
+    //var UID = "0001";
+    return UID;
+}
+
+
+
 
 function stats(type){
     
+    var url = 'https://smartmix.it/smartcalendar/stats.php';
+    var id = getUID();
     
-    //var url = 'https://smartmix.it/smartcalendar/stats.php?type='+type;
-    var url = 'https://smartmix.it/smartcalendar/stats.php?type=' + type;
-    
-    
+    var data = "type="+type;
+    data += "&ver="+versione;
+    data += "&id="+id;
+        
     if(isMacOS()){
-        var command = 'do shell script "curl ' + url + '"';
+        
+        var command = 'do shell script "curl -d \'' + data + '\' \'' + url + '\'"';
         var response = app.doScript(command, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+                
     }else{
         //
     }
-    
-    
-    
     
 }
 
