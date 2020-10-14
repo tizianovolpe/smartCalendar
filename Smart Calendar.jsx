@@ -2,7 +2,7 @@
  *
  * @name Smart Calendar
  * @desc Indesign script to create a calendar with italian festivity, saint, moons and Catholic mobile days
- * @version 1.1 beta
+ * @version 1.5 beta
  *
  * @author Smart Mix smartmix.it
  * @link https://smartmix.it
@@ -25,6 +25,9 @@
  *	## 1.3 beta
     Estesa la compatibilità con indesign cc2019. Quando il testo era troppo lungo non veniva eseguita l'applicazione degli stili di carattere e di paragrafo
     Cambiata l'estensione in jsx per risolvere il problema delle lettere accentate
+ *
+ *	## 1.5 beta
+    Fix bug connessione ad internet
  *
  */
 
@@ -1598,8 +1601,12 @@ function stats(type){
     data += "&id="+id;
         
     if(isMacOS()){
+        try{
+			var command = 'do shell script "curl -d \'' + data + '\' \'' + url + '\'"';
+		}catch(errore){
+			//
+		}
         
-        var command = 'do shell script "curl -d \'' + data + '\' \'' + url + '\'"';
         var response = app.doScript(command, ScriptLanguage.APPLESCRIPT_LANGUAGE);
                 
     }else{
