@@ -1601,13 +1601,15 @@ function stats(type){
     data += "&id="+id;
         
     if(isMacOS()){
+        
+		
         try{
 			var command = 'do shell script "curl -d \'' + data + '\' \'' + url + '\'"';
+			var response = app.doScript(command, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+		
 		}catch(errore){
 			//
 		}
-        
-        var response = app.doScript(command, ScriptLanguage.APPLESCRIPT_LANGUAGE);
                 
     }else{
         //
