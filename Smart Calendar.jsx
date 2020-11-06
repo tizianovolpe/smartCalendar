@@ -776,7 +776,7 @@ function calGen(anno,prefs){
             
             
             //calcolo IV di avvento, ultima domenica prima di natale
-            if(IVavvento == false & mese=='dic' & counterGiorni>(natale-7) & day == 0) {
+            if(IVavvento == false & mese=='dic' & counterGiorni>(natale-8) & day == 0) {
                 IVavvento = counterGiorni;
             }
 			
